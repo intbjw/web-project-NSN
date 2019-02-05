@@ -1,6 +1,7 @@
 #用于解析web目录的一个类
 class Log():
     def __init__(self,s):
+        self.sourcelog = s
         self.parseWebLog(s)
     
     def parseWebLog(self,s):
