@@ -1,6 +1,6 @@
-#用于解析web目录的一个类
 import time
 import datetime
+#用于解析web目录的一个类
 class Log():
     '''
     该类用于表示一个web日志，其包含一个日志的各种属性
@@ -68,7 +68,7 @@ class WebDate():
     #所有的时间统一按照秒来计算
     def sec_obj_minutes(self,s):
         #求两个时间对象的时间差
-        return abs(self.__second - s.second)
+        return abs(self.__second - s.getSec())
     @staticmethod
     def sec_minutes(sec1,sec2):
         #求两个秒的差
