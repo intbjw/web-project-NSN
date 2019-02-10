@@ -33,8 +33,9 @@ class WebDate():
     #29/Jan/2019:06:28:10
     def __init__(self,date):
         self.raw_date = date
-        self.second = self.timesec(date)
-
+        self.__second = self.timesec(date)
+    def getSec(self):
+        return self.__second
     @staticmethod
     def timesec(date):
         monthdic = {"Jan":1,"Feb":2,"Mar":3,"Apr":4,"May":5,"Jun":6,
@@ -52,7 +53,7 @@ class WebDate():
         sec = int(date[3])
         
         all_day = day
-        if year%400==0 or (year%4==0&year%100!=0):
+        if year%400==0 or (year%4==0 and year%100!=0):
             monthday[2] = 29
         else:
             monthday[2] = 28 
@@ -65,12 +66,13 @@ class WebDate():
         all_sec = int(time.mktime((year,month,day,hour,minute,sec,week,all_day,0)))
         return all_sec
     #所有的时间统一按照秒来计算
-    def timeminutes(self,s1,s2=None):
-        #参数为一个对象或者两个时间，以秒为单位
-        if s2 == None:
-            return abs(self.second - s2.second)
-        else:
-            return abs(s1 - s2)
+    def sec_obj_minutes(self,s):
+        #求两个时间对象的时间差
+        return abs(self.__second - s.second)
+    @staticmethod
+    def sec_minutes(sec1,sec2):
+        #求两个秒的差
+        return abs(sec1-sec2)
 
 class WebRisk():
     def __init__(self,logs):
