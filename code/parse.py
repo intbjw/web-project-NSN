@@ -1,9 +1,9 @@
 #用于解析web目录的一个类
+import time
 class Log():
     '''
     该类用于表示一个web日志，其包含一个日志的各种属性
     '''
-    import time
     def __init__(self,s):
         self.sourcelog = s
         self.parseWebLog(s)
@@ -20,7 +20,13 @@ class Log():
         self.header = s[1]
         #得到状态码和数据长度
         self.status_code = int(s[2].split()[0])
-        self.length = int(s[2].split()[1])
+        try:
+            #对于一些没有数据的长度 将其长度归零，比如head请求
+            self.length = int(s[2].split()[1])
+        except ValueError:
+            self.length = 0
+        else:
+            print("新的未知错误")
         #得到用户提出请求时所在的URL和user-agent
         self.url = s[3]
         self.user_agent = s[5]
@@ -59,3 +65,25 @@ class WebDate():
         else:
             return s1 - s2
         #注意大小关系
+class WebRisk():
+    def __init__(self,logs):
+        pass
+
+def parseIp(logs):
+    #先遍得到所有IP，然后分类
+    iplist = []
+    ipdic = {}
+    ipset = set()
+    #首先拿到所有IP地址
+    for log in logs:
+        ipset.add(log.ip)
+    #将对应地址的log对象列表置空
+    for ip in ipset:
+        ipdic[ip] = []
+    #遍历log对象，并根据IP将其添加到合适的列表中
+    for log in logs:
+        ipdic[log.ip].append(log)
+    #将列表从字典中提取出来
+    for k in ipdic.keys():
+        iplist.append(ipdic[k])
+    return iplist
