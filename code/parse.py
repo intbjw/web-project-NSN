@@ -75,8 +75,29 @@ class WebDate():
         return abs(sec1-sec2)
 
 class WebRisk():
+    #传过来的参数实际上是一个以相同IP为单位的log对象列表
+    #该类比较关键 设计安全威胁评级 一定要于图形界面好好的对应
+    #该类功能尚未实现完整
     def __init__(self,logs):
-        pass
+        self.logs = logs
+    def isDirBusetr(self):
+        #用户可能不止发动了一次攻击,因此对于单纯的判断404的比例是不靠谱的
+        #判断策略：设置一个阈值，如500 如果短时间超过500次404
+        #或者大于100且不足500，但是404的比重占到了百分之70以上
+        #对于小于100次的请求 不认为存在目录爆破行为
+        #对于短时间的定义：这里先制定一个阈值为频率2秒一次
+        if len(self.logs)<100:
+            return False
+        count = 0
+        time = self.logs[0].date.getSec()
+        for log in self.logs:
+            if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
+                count += 1
+            time = log.date.getSec()
+        if count > 500 or count >= 0.7*len(self.logs):
+            return True
+        else:
+            return False
 
 def parseIp(logs):
     #先遍得到所有IP，然后分类
