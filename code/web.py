@@ -7,8 +7,10 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
+from PyQt5.QtWidgets import *
+import os
 class Ui_MainWindow(object):
+    cwd = os.getcwd()
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(588, 619)
@@ -72,7 +74,7 @@ class Ui_MainWindow(object):
         self.pushButton_3.setObjectName("pushButton_3")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 588, 23))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 588, 26))
         self.menubar.setDefaultUp(False)
         self.menubar.setNativeMenuBar(False)
         self.menubar.setObjectName("menubar")
@@ -82,11 +84,21 @@ class Ui_MainWindow(object):
         MainWindow.setStatusBar(self.statusbar)
 
         self.retranslateUi(MainWindow)
+        self.pushButton_open.clicked.connect(Ui_MainWindow.slot_btn_chooseFile)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
-
+    def slot_btn_chooseFile(self):
+        fileName_choose, filetype = QFileDialog.getOpenFileName(None,"选取日志",Ui_MainWindow.cwd,"All Files (*);;logs Files (*.log)")
+        #没有选择文件
+        if fileName_choose == "":
+            print("\n取消选择")
+            return
+        #选择完文件之后的操作，调用分析日志的方法
+        print("\n你选择的文件为:")
+        print(fileName_choose)
+        print("文件筛选器类型: ", filetype)
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
-        MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
+        MainWindow.setWindowTitle(_translate("MainWindow", "web日志分析工具"))
         item = self.table.verticalHeaderItem(0)
         item.setText(_translate("MainWindow", "0"))
         item = self.table.verticalHeaderItem(1)
