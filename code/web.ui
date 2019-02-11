@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>web日志分析工具</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="frame_main">
@@ -193,7 +193,7 @@
      <x>0</x>
      <y>0</y>
      <width>588</width>
-     <height>23</height>
+     <height>26</height>
     </rect>
    </property>
    <property name="defaultUp">
@@ -206,5 +206,26 @@
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>pushButton_open</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slot_btn_chooseFile()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>125</x>
+     <y>67</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>162</x>
+     <y>87</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+ <slots>
+  <signal>signal1()</signal>
+  <slot>slot_btn_chooseFile()</slot>
+ </slots>
 </ui>
