@@ -1,6 +1,7 @@
 import time
 import datetime
 #用于解析web目录的一个类
+#webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
     '''
     该类用于表示一个web日志，其包含一个日志的各种属性
@@ -80,12 +81,14 @@ class WebRisk():
     #该类功能尚未实现完整
     def __init__(self,logs):
         self.logs = logs
+        level = self.sifting()
     def isDirBusetr(self):
         #用户可能不止发动了一次攻击,因此对于单纯的判断404的比例是不靠谱的
         #判断策略：设置一个阈值，如500 如果短时间超过500次404
         #或者大于100且不足500，但是404的比重占到了百分之70以上
         #对于小于100次的请求 不认为存在目录爆破行为
         #对于短时间的定义：这里先制定一个阈值为频率2秒一次
+        #注意一些特殊的user-agent
         if len(self.logs)<100:
             return False
         count = 0
@@ -98,7 +101,26 @@ class WebRisk():
             return True
         else:
             return False
-
+    def sifting(self):
+        black_agent = ("ZmEu","Baiduspider","python-requests")
+        sql_inject = ("select","/**/","or","#","--","and","union","from","where")
+        xss_inject = ()
+        shell_inject = ("chmod","curl","sh","wget")
+        #注意大小写
+        #在对url进行解析的时候比较复杂 需要url进行解码
+        #制定关于威胁排除的规则
+        #若用户连接数小于100 访问不包含敏感目录 无常见的shell
+        #user-agent正常
+        #无xss SQL等关键字，则视为无危胁
+        if len(self.logs) >= 100:
+                return True
+        for log in self.logs:
+            if log.header == "-" or log.header in black_agent:
+                return True
+            #url解析 然后处理各种注入
+            
+        return False
+        pass
 def parseIp(logs):
     #先遍得到所有IP，然后分类
     iplist = []
