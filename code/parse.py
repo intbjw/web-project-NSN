@@ -111,7 +111,7 @@ class WebRisk():
         time = self.logs[0].date.getSec()
         for log in self.logs:
             #将所有出现的资源添加到一个集合中
-            path_set.add(urllib.parse.urlparse(log.header.split()[1]))
+            path_set.add(urllib.parse.urlparse(log.header.split()[1]).path)
             #如果存在2秒内进行一次请求
             if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
                 count += 1
@@ -143,7 +143,33 @@ class WebRisk():
                 if i in url:
                     return True
     def isPasswdBuster(self):
-        pass
+        '''
+        该方法用于确定访问中是否存在口令猜解行为
+        口令可能出现在post方法中，也可能出现在get方法中
+        但是无论何种方法，都会访问登陆页面，因此只需关注登录页面即可
+        口令猜解危害较大，若疑似猜解次数达到20，即视为威胁
+        '''
+        #此目录为登录页面目录，可以借助文件读取进来，登录界面的目录可由用户提供
+        #测试阶段暂时定为一个已知的列表
+        pwd_dir = ["login.php","admin.php","xmlrpc.php"]
+        count = 0
+        time = self.logs[0].date.getSec()
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            if log.date.sec_minutes(time,log.date.getSec()) < 2:
+                url = urllib.parse.urlparse(url).path
+                for i in pwd_dir:
+                    if i in url:
+                        count += 1
+                if count == 20:
+                    break
+            time = log.date.getSec()
+        if count >= 20:
+            return True
+        else:
+            return False
+
+
     def isCmdExecute(self):
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
@@ -177,7 +203,8 @@ class WebRisk():
             for i in self.xss_inject:
                 if i in self.xss_inject:
                     return True
-            
+            if self.isPasswdBuster():#数据量少的情况下直接对口令猜解进行一次完整测试
+                return True
         return False
 
 def parseIp(logs):
