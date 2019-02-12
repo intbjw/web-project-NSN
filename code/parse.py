@@ -1,5 +1,6 @@
 import time
 import datetime
+import urllib.parse
 #用于解析web目录的一个类
 #webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
@@ -81,7 +82,11 @@ class WebRisk():
     #该类功能尚未实现完整
     def __init__(self,logs):
         self.logs = logs
-        level = self.sifting()
+        isrisk = self.sifting()
+        if isrisk:
+            flag = self.isDirBusetr()
+        else:
+            self.risk_level = 0
     def isDirBusetr(self):
         #用户可能不止发动了一次攻击,因此对于单纯的判断404的比例是不靠谱的
         #判断策略：设置一个阈值，如500 如果短时间超过500次404
@@ -89,8 +94,6 @@ class WebRisk():
         #对于小于100次的请求 不认为存在目录爆破行为
         #对于短时间的定义：这里先制定一个阈值为频率2秒一次
         #注意一些特殊的user-agent
-        if len(self.logs)<100:
-            return False
         count = 0
         time = self.logs[0].date.getSec()
         for log in self.logs:
@@ -104,23 +107,36 @@ class WebRisk():
     def sifting(self):
         black_agent = ("ZmEu","Baiduspider","python-requests")
         sql_inject = ("select","/**/","or","#","--","and","union","from","where")
-        xss_inject = ()
+        xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
         shell_inject = ("chmod","curl","sh","wget")
         #注意大小写
         #在对url进行解析的时候比较复杂 需要url进行解码
         #制定关于威胁排除的规则
-        #若用户连接数小于100 访问不包含敏感目录 无常见的shell
+        #若用户连接数小于200 访问不包含敏感目录 无常见的shell
         #user-agent正常
         #无xss SQL等关键字，则视为无危胁
-        if len(self.logs) >= 100:
+        #"GET /bWAPP/htmli_get.php?firstname=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&lastname=%3Ca+
+        #href%3D%22http%3A%2F%2Flocalhost%22%3E%3C%2Fa%3E&form=submit
+        if len(self.logs) >= 200:
                 return True
         for log in self.logs:
-            if log.header == "-" or log.header in black_agent:
+            #处理异常user-agent
+            if log.user_agent == "-" or log.user_agent in black_agent:
                 return True
             #url解析 然后处理各种注入
+            url = urllib.parse.unquote(log.header.split[1]).lower()
+            for i in sql_inject:
+                if i in url:
+                    return True
+            for i in shell_inject:
+                if i in url:
+                    return True
+            for i in xss_inject:
+                if i in xss_inject:
+                    return True
             
         return False
-        pass
+
 def parseIp(logs):
     #先遍得到所有IP，然后分类
     iplist = []
