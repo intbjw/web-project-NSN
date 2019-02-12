@@ -82,11 +82,17 @@ class WebRisk():
     #该类功能尚未实现完整
     def __init__(self,logs):
         self.logs = logs
+        self.risk_level = 0
+        self.black_agent = ("ZmEu","Baiduspider","python-requests")
+        self.sql_inject = ("select","/**/","or","#","--","and","union","from","where")
+        self.xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
+        self.shell_inject = ("chmod","curl","sh","wget")
         isrisk = self.sifting()
         if isrisk:
-            flag = self.isDirBusetr()
-        else:
-            self.risk_level = 0
+            #除文件爆破之外 似乎所有的判断对于post都是无效的
+            #评级标准有待制定
+            if self.isDirBusetr():
+                self.risk_level = 1
     def isDirBusetr(self):
         #用户可能不止发动了一次攻击,因此对于单纯的判断404的比例是不靠谱的
         #判断策略：设置一个阈值，如500 如果短时间超过500次404
@@ -95,20 +101,43 @@ class WebRisk():
         #对于短时间的定义：这里先制定一个阈值为频率2秒一次
         #注意一些特殊的user-agent
         count = 0
+        isspider = False
         time = self.logs[0].date.getSec()
         for log in self.logs:
             if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
                 count += 1
+            for i in self.black_agent:
+                if log.user_agent == "-" or i in log.user_agent:
+                    isspider = True
             time = log.date.getSec()
-        if count > 500 or count >= 0.7*len(self.logs):
+        if count > 500 or count >= 0.7*len(self.logs) or (count>0.3 and isspider):
             return True
         else:
             return False
+    def isSqlInjection(self):
+        #建议利用一下正则匹配进行完善 第一版先进行简单的处理
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            for i in self.sql_inject:
+                if i in url:
+                    return True
+        return False
+    def isXss(self):
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            for i in self.xss_inject:
+                if i in url:
+                    return True
+    def isPasswdBuster(self):
+        pass
+    def isCmdExecute(self):
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            for i in self.shell_inject:
+                if i in url:
+                    return True
     def sifting(self):
-        black_agent = ("ZmEu","Baiduspider","python-requests")
-        sql_inject = ("select","/**/","or","#","--","and","union","from","where")
-        xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
-        shell_inject = ("chmod","curl","sh","wget")
+        
         #注意大小写
         #在对url进行解析的时候比较复杂 需要url进行解码
         #制定关于威胁排除的规则
@@ -121,18 +150,18 @@ class WebRisk():
                 return True
         for log in self.logs:
             #处理异常user-agent
-            if log.user_agent == "-" or log.user_agent in black_agent:
+            if log.user_agent == "-" or log.user_agent in self.black_agent:
                 return True
             #url解析 然后处理各种注入
             url = urllib.parse.unquote(log.header.split[1]).lower()
-            for i in sql_inject:
+            for i in self.sql_inject:
                 if i in url:
                     return True
-            for i in shell_inject:
+            for i in self.shell_inject:
                 if i in url:
                     return True
-            for i in xss_inject:
-                if i in xss_inject:
+            for i in self.xss_inject:
+                if i in self.xss_inject:
                     return True
             
         return False
