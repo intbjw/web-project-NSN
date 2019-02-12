@@ -1,6 +1,7 @@
 import time
 import datetime
 import urllib.parse
+import re
 #用于解析web目录的一个类
 #webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
@@ -94,23 +95,36 @@ class WebRisk():
             if self.isDirBusetr():
                 self.risk_level = 1
     def isDirBusetr(self):
-        #用户可能不止发动了一次攻击,因此对于单纯的判断404的比例是不靠谱的
-        #判断策略：设置一个阈值，如500 如果短时间超过500次404
-        #或者大于100且不足500，但是404的比重占到了百分之70以上
-        #对于小于100次的请求 不认为存在目录爆破行为
-        #对于短时间的定义：这里先制定一个阈值为频率2秒一次
-        #注意一些特殊的user-agent
+        '''
+        该函数用于判断是否存在目录爆破威胁，其判断思路为：计算用户短时间内请求状态码
+        404出现数量，大于阈值，即可确定。为防止用户不止进行了一种攻击的情况出现导致
+        该方法失效，基于攻击时扫描占大多数这一情况，辅助判断为若404占比达到70%
+        且访问路径数量达到20，即认为存在该威胁。若用户访问量很小，但是请求头疑似爬虫，
+        也视为威胁。
+        (曾遇到一种密码爆破情况，因事先删除了文件，所以状态全是404，但仅访问一个文件,
+        因此对访问路径数量也设置了限制
+        )
+        '''
         count = 0
+        path_set = set()
         isspider = False
         time = self.logs[0].date.getSec()
         for log in self.logs:
+            #将所有出现的资源添加到一个集合中
+            path_set.add(urllib.parse.urlparse(log.header.split()[1]))
+            #如果存在2秒内进行一次请求
             if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
                 count += 1
             for i in self.black_agent:
                 if log.user_agent == "-" or i in log.user_agent:
                     isspider = True
             time = log.date.getSec()
-        if count > 500 or count >= 0.7*len(self.logs) or (count>0.3 and isspider):
+        #短时间资源不存在的情况达到500次 或者虽未达到500 但70%及以上的访问均无效
+        #在大量的访问下，若访问路径数大于阈值，可以确定存在目录爆破行为
+        if (count > 500 or count >= 0.7*len(self.logs)) and len(path_set)>20:
+            return True
+        #30%以上的访问均无效,且请求头异常,疑似爬虫 或者,访问的资源位置
+        elif count>0.3 and isspider:
             return True
         else:
             return False
