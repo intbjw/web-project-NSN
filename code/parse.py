@@ -169,27 +169,19 @@ class WebRisk():
         else:
             return False
 
-<<<<<<< HEAD
-    def isCmdExecute(self):    
-        for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
-            for i in self.shell_inject:
-                if i in url:
-                    return True
-=======
 
     def isCmdExecute(self):
->>>>>>> 64c97aae2bbe033477d506ec4fda5da97eecd59f
         #初期不具有判断是否攻击成功的功能
         '''
         判断命令执行漏洞的策略：检查是否存在一些常见的危险的命令
         只要存在威胁的命令即认为有问题
         为增加判断的准确性，这里将利用正则表达式进行匹配
+        第一版的函数只对一些常见的参数进行正则匹配和关键字查找
         '''
         raw_str = [r"chmod ([+]x|[0-9a-z]{3}) [a-z0-9_]+[.][a-z0-9]+",
                     r"wget http[/0-9a-z_&=]+",r"(sh|bash) .+[.]sh"
             ]
-        blackkey = ("shell_exec","passthru","popen","proc_popenla")
+        blackkey = ("shell_exec","passthru","popen","proc_popenla","system")
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower
             for i in blackkey:
@@ -201,7 +193,7 @@ class WebRisk():
                 if match:
                     return True
         return False
-            #
+
     def sifting(self):
         '''
         该类用于初步判断某IP的请求是可能否存在威胁
