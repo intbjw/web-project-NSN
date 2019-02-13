@@ -268,4 +268,4 @@ class Statistics():
         sorted(URLset.items(), key=lambda x: x[1], reverse=True)
         return URLset
 
-    #攻击次数待定
+    #攻击次数待定;
