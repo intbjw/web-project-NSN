@@ -227,7 +227,7 @@ class WebRisk():
             if log.user_agent == "-" or log.user_agent in self.black_agent:
                 return True
             #url解析 然后处理各种注入
-            url = urllib.parse.unquote(log.header.split[1]).lower()
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in self.sql_inject:
                 if i in url:
                     return True
