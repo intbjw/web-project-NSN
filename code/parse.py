@@ -287,6 +287,8 @@ def parseIp(logs):
     for k in ipdic.keys():
         iplist.append(ipdic[k])
     return iplist
+def makejson():
+    pass
 class Statistics():
     '''
     该类用于统计数据
