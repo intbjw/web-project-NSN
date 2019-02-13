@@ -287,7 +287,8 @@ def parseIp(logs):
         ipdic[log.ip].append(log)
     #将列表从字典中提取出来
     for k in ipdic.keys():
-        iplist.append(ipdic[k])
+        if len(ipdic[k]) > 2:
+            iplist.append(ipdic[k])
     return iplist
 def makejson(risk_lists):
     #传递的参数是一个webrisk对象的列表
