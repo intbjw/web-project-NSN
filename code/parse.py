@@ -119,7 +119,8 @@ class WebRisk():
             if self.isXss():
                 self.risk_level = 2
                 self.risktype += "xss攻击,"
-                self.riskdescribe += "疑似遭到XSS攻击"
+                self.riskdescribe += "疑似遭到XSS攻击."
+            self.risktype = self.risktype[:-1]
 
     def isDirBusetr(self):
         '''
