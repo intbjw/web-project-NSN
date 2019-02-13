@@ -334,4 +334,24 @@ class Statistics():
         URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
         return URLset
 
-    #攻击次数待定;
+    def CountAttack(self,logs):
+        Attackset = {}
+        for log in logs:
+            risk = WebRisk(log)
+            if risk.isDirBusetr():
+                Attackset['目录爆破'] = Attackset.get('目录爆破',0) + 1
+                continue
+            if risk.isCmdExecute():
+                Attackset['命令执行'] = Attackset.get('命令执行', 0) + 1
+                continue
+            if risk.isPasswdBuster():
+                Attackset['口令猜解'] = Attackset.get('口令猜解', 0) + 1
+                continue
+            if risk.isSqlInjection():
+                Attackset['SQL注入'] = Attackset.get('SQL注入', 0) + 1
+                continue
+            if risk.isXss():
+                Attackset['xss攻击'] = Attackset.get('xss攻击', 0) + 1
+                continue
+        Attackset = sorted(Attackset.items(), key=lambda x: x[1], reverse=True)
+        return Attackset
