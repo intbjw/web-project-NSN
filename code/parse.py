@@ -182,6 +182,8 @@ class WebRisk():
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
             query = urlparse(url)[4]
+            if query in self.xss_inject:
+                return True
             pattern = re.compile(raw_str)
             match = pattern.search(query)
             if match:
@@ -228,7 +230,7 @@ class WebRisk():
             ]
         blackkey = ("shell_exec","passthru","popen","proc_popenla","system")
         for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in blackkey:
                 if i in url:
                     return True
