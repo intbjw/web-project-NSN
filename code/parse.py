@@ -91,7 +91,7 @@ class WebRisk():
         self.sql_inject = ("select","/**/","or","#","--","and","union","from","where")
         self.xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
         self.shell_inject = ("chmod","curl","sh","wget")
-        self.time = logs[0].date.raw_date
+        self.date = logs[0].date.raw_date
         self.risktype = ""
         self.riskdescribe = ""
         self.ip = logs[0].ip
