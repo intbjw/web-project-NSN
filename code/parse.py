@@ -139,11 +139,26 @@ class WebRisk():
                     return True
         return False
     def isXss(self):
+        #暂定正则表达是是这个，会在后续升级中进行改进
+        raw_str = r"""href|xss|javascript|vbscript|expression|applet|meta|xml|blink|link|style|script|embed|object|
+        iframe|frame|frameset|ilayer|layer|bgsound|title|base|onabort|onactivate|onafterprint|onafterupdate|
+        onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforeeditfocus|onbeforepaste|onbeforeprint|
+        onbeforeunload|onbeforeupdate|onblur|onbounce|oncellchange|onchange|onclick|oncontextmenu|oncontrolselect|
+        oncopy|oncut|ondataavailable|ondatasetchanged|ondatasetcomplete|ondblclick|ondeactivate|ondrag|ondragend|
+        ondragenter|ondragleave|ondragover|ondragstart|ondrop|onerror|onerrorupdate|onfilterchange|onfinish|onfocus|
+        onfocusin|onfocusout|onhelp|onkeydown|onkeypress|onkeyup|onlayoutcomplete|onload|onlosecapture|onmousedown|
+        onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onmousewheel|onmove|onmoveend|onmovestart|
+        onpaste|onpropertychange|onreadystatechange|onreset|onresize|onresizeend|onresizestart|onrowenter|onrowexit|
+        onrowsdelete|onrowsinserted|onscroll|onselect|onselectionchange|onselectstart|onstart|onstop|onsubmit|
+        onunload(\s)+"""
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
-            for i in self.xss_inject:
-                if i in url:
-                    return True
+            query = urlparse(url)[4]
+            pattern = re.compile(raw_str)
+            match = pattern.search(query)
+            if match:
+                return True
+            return False
     def isPasswdBuster(self):
         '''
         该方法用于确定访问中是否存在口令猜解行为
