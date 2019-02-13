@@ -169,8 +169,17 @@ class WebRisk():
         else:
             return False
 
+<<<<<<< HEAD
+    def isCmdExecute(self):    
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            for i in self.shell_inject:
+                if i in url:
+                    return True
+=======
 
     def isCmdExecute(self):
+>>>>>>> 64c97aae2bbe033477d506ec4fda5da97eecd59f
         #初期不具有判断是否攻击成功的功能
         '''
         判断命令执行漏洞的策略：检查是否存在一些常见的危险的命令
