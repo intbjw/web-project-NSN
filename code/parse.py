@@ -321,7 +321,7 @@ class Statistics():
         IPset = {}
         for log in logs:
             IPset[log.ip] = IPset.get(log.ip,0) + 1
-        sorted(IPset.items(),key=lambda x:x[1],reverse = True)
+        IPset = sorted(IPset.items(),key=lambda x:x[1],reverse = True)
 
         return IPset
 
@@ -331,7 +331,7 @@ class Statistics():
             url = log.header.split()[1]
             o = urlparse(url)
             URLset[o[2]] = URLset.get(o[2],0) + 1
-        sorted(URLset.items(), key=lambda x: x[1], reverse=True)
+        URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
         return URLset
 
     #攻击次数待定;
