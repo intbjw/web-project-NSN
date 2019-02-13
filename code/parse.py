@@ -2,6 +2,8 @@ import time
 import datetime
 import urllib.parse
 import re
+from urllib.parse import urlparse
+from urllib.parse import quote,unquote
 #用于解析web目录的一个类
 #webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
@@ -242,3 +244,28 @@ def parseIp(logs):
     for k in ipdic.keys():
         iplist.append(ipdic[k])
     return iplist
+class Statistics():
+    '''
+    该类用于统计数据
+    1.访问次数最高的前10个IP
+    2.访问次数最高的前10个URL
+    3.攻击次数统计
+    '''
+    def CountIP(self,logs):
+        IPset = {}
+        for log in logs:
+            IPset[log.ip] = IPset.get(log.ip,0) + 1
+        sorted(IPset.items(),key=lambda x:x[1],reverse = True)
+
+        return IPset
+
+    def CountURL(self,logs):
+        URLset = {}
+        for log in logs:
+            url = log.header.split()[1]
+            o = urlparse(url)
+            URLset[o[2]] = URLset.get(o[2],0) + 1
+        sorted(URLset.items(), key=lambda x: x[1], reverse=True)
+        return URLset
+
+    #攻击次数待定
