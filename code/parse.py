@@ -169,12 +169,17 @@ class WebRisk():
         else:
             return False
 
+<<<<<<< HEAD
     def isCmdExecute(self):    
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in self.shell_inject:
                 if i in url:
                     return True
+=======
+
+    def isCmdExecute(self):
+>>>>>>> 64c97aae2bbe033477d506ec4fda5da97eecd59f
         #初期不具有判断是否攻击成功的功能
         '''
         判断命令执行漏洞的策略：检查是否存在一些常见的危险的命令
@@ -191,14 +196,6 @@ class WebRisk():
         '''
         #注意大小写 注意对URL编码的请求进行解码
         
-        #注意大小写
-        #在对url进行解析的时候比较复杂 需要url进行解码
-        #制定关于威胁排除的规则
-        #若用户连接数小于200 访问不包含敏感目录 无常见的shell
-        #user-agent正常
-        #无xss SQL等关键字，则视为无危胁
-        #"GET /bWAPP/htmli_get.php?firstname=%3Cscript%3Ealert%281%29%3C%2Fscript%3E&lastname=%3Ca+
-        #href%3D%22http%3A%2F%2Flocalhost%22%3E%3C%2Fa%3E&form=submit
         if len(self.logs) >= 200:
                 return True
         for log in self.logs:
