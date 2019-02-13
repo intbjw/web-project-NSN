@@ -132,11 +132,16 @@ class WebRisk():
             return False
     def isSqlInjection(self):
         #建议利用一下正则匹配进行完善 第一版先进行简单的处理
+        #暂时先用网上这个吧  以后在详细处理
+        raw_str = r"""/select(\s)+|insert(\s)+|update(\s)+|(\s)+and(\s)+|(\s)+or(\s)+|delete(\s)+|\'|\/\*|\*|\.\.\/|\.\/|union(\s)+|into(\s)+|load_file(\s)+|outfile(\s)+"""
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in self.sql_inject:
                 if i in url:
                     return True
+        match = re.search(raw_str,url)
+        if match:
+            return True    
         return False
     def isXss(self):
         #暂定正则表达是是这个，会在后续升级中进行改进
