@@ -96,8 +96,8 @@ class WebRisk():
         self.riskdescribe = ""
         self.ip = logs[0].ip
         self.user_agent = logs[0].user_agent
-        self.isrisk = self.sifting()
-        if self.isrisk:
+        isrisk = self.sifting()
+        if isrisk:
             #除文件爆破之外 似乎所有的判断对于post都是无效的
             #漏洞威胁分4个等级，4是最高级,存在多种漏洞取最高级
             if self.isDirBusetr():
@@ -292,10 +292,10 @@ def parseIp(logs):
     return iplist
 def makejson(risk_lists):
     #传递的参数是一个webrisk对象的列表
+    js_result = []
     for risk in risk_lists:
-        js_result = []
         #如果存在威胁的话
-        if risk.isrisk:
+        if risk.risk_level != 0:
             dic = {}
             dic["ip"] = risk.ip
             dic["date"] = risk.date
