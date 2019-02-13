@@ -228,9 +228,10 @@ class WebRisk():
         第一版的函数只对一些常见的参数进行正则匹配和关键字查找
         '''
         raw_str = [r"chmod ([+]x|[0-9a-z]{3}) [a-z0-9_]+[.][a-z0-9]+",
-                    r"wget http[/0-9a-z_&=]+",r"(sh|bash) .+[.]sh"
+                    r"wget http[/0-9a-z_&=]+",r"(sh|bash) .+[.]sh",
+                    r'system[(]".+"[)]'
             ]
-        blackkey = ("shell_exec","passthru","popen","proc_popenla","system")
+        blackkey = ("shell_exec","passthru","popen","proc_popenla","phpinfo()")
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in blackkey:
