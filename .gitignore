@@ -102,3 +102,6 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+.idea/workspace.xml
+*.xml
+.idea/web-project-NSN.iml
