@@ -177,7 +177,22 @@ class WebRisk():
         只要存在威胁的命令即认为有问题
         为增加判断的准确性，这里将利用正则表达式进行匹配
         '''
-        pass
+        raw_str = [r"chmod ([+]x|[0-9a-z]{3}) [a-z0-9_]+[.][a-z0-9]+",
+                    r"wget http[/0-9a-z_&=]+",r"(sh|bash) .+[.]sh"
+            ]
+        blackkey = ("shell_exec","passthru","popen","proc_popenla")
+        for log in self.logs:
+            url = urllib.parse.unquote(log.header.split()[1]).lower
+            for i in blackkey:
+                if i in url:
+                    return True
+            for i in raw_str:
+                pattern = re.compile(i)
+                match = pattern.search(url)
+                if match:
+                    return True
+        return False
+            #
     def sifting(self):
         '''
         该类用于初步判断某IP的请求是可能否存在威胁
