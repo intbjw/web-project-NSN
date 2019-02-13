@@ -90,12 +90,35 @@ class WebRisk():
         self.sql_inject = ("select","/**/","or","#","--","and","union","from","where")
         self.xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
         self.shell_inject = ("chmod","curl","sh","wget")
-        isrisk = self.sifting()
-        if isrisk:
+        self.time = logs[0].date.raw_date
+        self.risktype = ""
+        self.riskdescribe = ""
+        self.ip = logs[0].ip
+        self.isrisk = self.sifting()
+        if self.isrisk:
             #除文件爆破之外 似乎所有的判断对于post都是无效的
-            #评级标准有待制定
+            #漏洞威胁分4个等级，4是最高级,存在多种漏洞取最高级
             if self.isDirBusetr():
                 self.risk_level = 1
+                self.risktype += "目录爆破,"
+                self.riskdescribe += "网站后台目录存在被爆破风险."
+            if self.isCmdExecute():
+                self.risk_level = 4
+                self.risktype += "命令执行,"
+                self.riskdescribe += "疑似被执行恶意命令."
+            if self.isPasswdBuster():
+                self.risk_level = 3
+                self.risktype += "口令猜解,"
+                self.riskdescribe += "疑似后台有恶意爆破密码行为."
+            if self.isSqlInjection():
+                self.risk_level = 4
+                self.risktype += "SQL注入,"
+                self.riskdescribe += "疑似发现SQL注入行为."
+            if self.isXss():
+                self.risk_level = 2
+                self.risktype += "xss攻击,"
+                self.riskdescribe += "疑似遭到XSS攻击"
+
     def isDirBusetr(self):
         '''
         该函数用于判断是否存在目录爆破威胁，其判断思路为：计算用户短时间内请求状态码
