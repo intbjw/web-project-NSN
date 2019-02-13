@@ -4,6 +4,7 @@ import urllib.parse
 import re
 from urllib.parse import urlparse
 from urllib.parse import quote,unquote
+import json
 #用于解析web目录的一个类
 #webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
@@ -94,6 +95,7 @@ class WebRisk():
         self.risktype = ""
         self.riskdescribe = ""
         self.ip = logs[0].ip
+        self.user_agent = logs[0].user_agent
         self.isrisk = self.sifting()
         if self.isrisk:
             #除文件爆破之外 似乎所有的判断对于post都是无效的
@@ -287,8 +289,24 @@ def parseIp(logs):
     for k in ipdic.keys():
         iplist.append(ipdic[k])
     return iplist
-def makejson():
-    pass
+def makejson(risk_lists):
+    #传递的参数是一个webrisk对象的列表
+    for risk in risk_lists:
+        js_result = []
+        #如果存在威胁的话
+        if risk.isrisk:
+            dic = {}
+            dic["ip"] = risk.ip
+            dic["date"] = risk.date
+            dic["user-agent"] = risk.user_agent
+            dic["level"] = risk.risk_level
+            dic["describe"] = risk.riskdescribe
+            dic["type"] = risk.risktype
+            js_result.append(dic)
+    js_str = json.dumps(js_result)
+    with open("data.json","w") as f:
+        f.write(js_str)
+
 class Statistics():
     '''
     该类用于统计数据
