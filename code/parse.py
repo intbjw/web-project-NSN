@@ -169,14 +169,27 @@ class WebRisk():
         else:
             return False
 
-
-    def isCmdExecute(self):
+    def isCmdExecute(self):    
         for log in self.logs:
             url = urllib.parse.unquote(log.header.split()[1]).lower()
             for i in self.shell_inject:
                 if i in url:
                     return True
+        #初期不具有判断是否攻击成功的功能
+        '''
+        判断命令执行漏洞的策略：检查是否存在一些常见的危险的命令
+        只要存在威胁的命令即认为有问题
+        为增加判断的准确性，这里将利用正则表达式进行匹配
+        '''
+        pass
     def sifting(self):
+        '''
+        该类用于初步判断某IP的请求是可能否存在威胁
+        若请求较多(暂定200)，认为可能存在威胁
+        若请求较少，粗略的根据user-agent，和一些SQL语句等判断
+        存在威胁的可能
+        '''
+        #注意大小写 注意对URL编码的请求进行解码
         
         #注意大小写
         #在对url进行解析的时候比较复杂 需要url进行解码
