@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>780</width>
-    <height>680</height>
+    <width>776</width>
+    <height>679</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -32,7 +32,7 @@
     <widget class="QPushButton" name="pushButton_out">
      <property name="geometry">
       <rect>
-       <x>10</x>
+       <x>180</x>
        <y>10</y>
        <width>71</width>
        <height>31</height>
@@ -45,7 +45,7 @@
     <widget class="QPushButton" name="pushButton_open">
      <property name="geometry">
       <rect>
-       <x>90</x>
+       <x>10</x>
        <y>10</y>
        <width>71</width>
        <height>31</height>
@@ -104,6 +104,19 @@
       <string>搜索</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton">
+     <property name="geometry">
+      <rect>
+       <x>90</x>
+       <y>10</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>日志分析</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
@@ -145,6 +158,18 @@
          <height>471</height>
         </rect>
        </property>
+       <property name="minimumSize">
+        <size>
+         <width>299</width>
+         <height>200</height>
+        </size>
+       </property>
+       <property name="styleSheet">
+        <string notr="true">font: 9pt &quot;Microsoft YaHei UI&quot;;</string>
+       </property>
+       <attribute name="horizontalHeaderMinimumSectionSize">
+        <number>40</number>
+       </attribute>
        <row>
         <property name="text">
          <string>0</string>
@@ -179,25 +204,55 @@
         <property name="text">
          <string>目标IP</string>
         </property>
+        <property name="font">
+         <font>
+          <family>Adobe 黑体 Std R</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
        </column>
        <column>
         <property name="text">
          <string>时间</string>
+        </property>
+        <property name="font">
+         <font>
+          <family>Adobe 黑体 Std R</family>
+          <pointsize>16</pointsize>
+         </font>
         </property>
        </column>
        <column>
         <property name="text">
          <string>威胁类型</string>
         </property>
+        <property name="font">
+         <font>
+          <family>Adobe 黑体 Std R</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
        </column>
        <column>
         <property name="text">
          <string>威胁描述</string>
         </property>
+        <property name="font">
+         <font>
+          <family>Adobe 黑体 Std R</family>
+          <pointsize>16</pointsize>
+         </font>
+        </property>
        </column>
        <column>
         <property name="text">
          <string>连接器</string>
+        </property>
+        <property name="font">
+         <font>
+          <family>Adobe 黑体 Std R</family>
+          <pointsize>16</pointsize>
+         </font>
         </property>
        </column>
       </widget>
@@ -294,7 +349,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>780</width>
+     <width>776</width>
      <height>23</height>
     </rect>
    </property>
