@@ -9,8 +9,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import *
 import os
+import analyse
 class Ui_MainWindow(object):
     cwd = os.getcwd()
+    set = ()
+    fileName_choose = ""
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(776, 679)
@@ -150,17 +153,16 @@ class Ui_MainWindow(object):
 
     def slot_btn_chooseFile(self):
         fileName_choose, filetype = QFileDialog.getOpenFileName(None,"选取日志",Ui_MainWindow.cwd,"All Files (*);;logs Files (*.log)")
-        #没有选择文件
-        if fileName_choose == "":
-            print("\n取消选择")
-            return
-        #选择完文件之后的操作，调用分析日志的方法
-        print("\n你选择的文件为:")
-        print(fileName_choose)
-        print("文件筛选器类型: ", filetype)
+        #选择完文件之后返回选择文件的路径
+        Ui_MainWindow.fileName_choose = fileName_choose
+        #print("\n你选择的文件为:")
+        #print(fileName_choose)
+        #print("文件筛选器类型: ", filetype)
+
     def slot_btn_start(self):
-        #分析程序开始
-        print("分析")
+        #分析程序开始,绘制相关的表格
+        Ui_MainWindow.set = analyse.analyseLog(Ui_MainWindow.fileName_choose)
+        print(Ui_MainWindow.set)
         pass
     def slot_btn_search(self):
         #搜索事件

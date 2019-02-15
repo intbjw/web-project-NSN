@@ -1,3 +1,4 @@
+# -*- coding: UTF-8 -*-
 import time
 import datetime
 import urllib.parse
@@ -96,6 +97,11 @@ class WebRisk():
         self.riskdescribe = ""
         self.ip = logs[0].ip
         self.user_agent = logs[0].user_agent
+        self.DirBusetr_num = 0
+        self.CmdExecute_num = 0
+        self.PasswdBuster_num = 0
+        self.SqlInjection_num = 0
+        self.Xss_num = 0
         isrisk = self.sifting()
         if isrisk:
             #除文件爆破之外 似乎所有的判断对于post都是无效的
@@ -104,22 +110,27 @@ class WebRisk():
                 self.risk_level = 1
                 self.risktype += "目录爆破,"
                 self.riskdescribe += "网站后台目录存在被爆破风险."
+                self.DirBusetr_num = self.DirBusetr_num + 1
             if self.isCmdExecute():
                 self.risk_level = 4
                 self.risktype += "命令执行,"
                 self.riskdescribe += "疑似被执行恶意命令."
+                self.CmdExecute_num = self.CmdExecute_num + 1
             if self.isPasswdBuster():
                 self.risk_level = 3
                 self.risktype += "口令猜解,"
                 self.riskdescribe += "疑似后台有恶意爆破密码行为."
+                self.PasswdBuster_num = self.PasswdBuster_num + 1
             if self.isSqlInjection():
                 self.risk_level = 4
                 self.risktype += "SQL注入,"
                 self.riskdescribe += "疑似发现SQL注入行为."
+                self.SqlInjection_num = self.SqlInjection_num + 1
             if self.isXss():
                 self.risk_level = 2
                 self.risktype += "xss攻击,"
                 self.riskdescribe += "疑似遭到XSS攻击."
+                self.Xss_num = self.Xss_num + 1
             self.risktype = self.risktype[:-1]
 
     def isDirBusetr(self):
@@ -336,24 +347,12 @@ class Statistics():
         URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
         return URLset
 
-    def CountAttack(self,logs):
+    def CountAttack(self,Attack):
         Attackset = {}
-        for log in logs:
-            risk = WebRisk(log)
-            if risk.isDirBusetr():
-                Attackset['目录爆破'] = Attackset.get('目录爆破',0) + 1
-                continue
-            if risk.isCmdExecute():
-                Attackset['命令执行'] = Attackset.get('命令执行', 0) + 1
-                continue
-            if risk.isPasswdBuster():
-                Attackset['口令猜解'] = Attackset.get('口令猜解', 0) + 1
-                continue
-            if risk.isSqlInjection():
-                Attackset['SQL注入'] = Attackset.get('SQL注入', 0) + 1
-                continue
-            if risk.isXss():
-                Attackset['xss攻击'] = Attackset.get('xss攻击', 0) + 1
-                continue
+        Attackset['目录爆破'] = Attackset.get('目录爆破',0) + Attack[0]
+        Attackset['命令执行'] = Attackset.get('命令执行', 0) + Attack[1]
+        Attackset['口令猜解'] = Attackset.get('口令猜解', 0) + Attack[2]
+        Attackset['SQL注入'] = Attackset.get('SQL注入', 0) + Attack[3]
+        Attackset['xss攻击'] = Attackset.get('xss攻击', 0) + Attack[4]
         Attackset = sorted(Attackset.items(), key=lambda x: x[1], reverse=True)
         return Attackset
