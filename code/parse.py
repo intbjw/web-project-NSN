@@ -24,7 +24,7 @@ class Log():
         self.date = WebDate(s[0].split()[-2][1:])
         #email和用户名字这里不再获取
         #得到未被进一步分割的首部字段
-        self.header = s[1]
+        self.header = unquote(s[1])
         #得到状态码和数据长度
         self.status_code = int(s[2].split()[0])
         try:
@@ -161,7 +161,7 @@ class WebRisk():
         #暂时先用网上这个吧  以后在详细处理
         raw_str = r"""/select(\s)+|insert(\s)+|update(\s)+|(\s)+and(\s)+|(\s)+or(\s)+|delete(\s)+|\'|\/\*|\*|\.\.\/|\.\/|union(\s)+|into(\s)+|load_file(\s)+|outfile(\s)+"""
         for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            url = log.header.split()[1].lower()
             for i in self.sql_inject:
                 if i in url:
                     return True
@@ -183,7 +183,7 @@ class WebRisk():
         onrowsdelete|onrowsinserted|onscroll|onselect|onselectionchange|onselectstart|onstart|onstop|onsubmit|
         onunload(\s)+"""
         for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            url = log.header.split()[1].lower()
             query = urlparse(url)[4]
             if query in self.xss_inject:
                 return True
@@ -205,7 +205,7 @@ class WebRisk():
         count = 0
         time = self.logs[0].date.getSec()
         for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            url = log.header.split()[1].lower()
             if log.date.sec_minutes(time,log.date.getSec()) < 2:
                 url = urllib.parse.urlparse(url).path
                 for i in pwd_dir:
@@ -234,7 +234,7 @@ class WebRisk():
             ]
         blackkey = ("shell_exec","passthru","popen","proc_popenla","phpinfo()")
         for log in self.logs:
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            url = log.header.split()[1].lower()
             for i in blackkey:
                 if i in url:
                     return True
@@ -261,7 +261,7 @@ class WebRisk():
             if log.user_agent == "-" or log.user_agent in self.black_agent:
                 return True
             #url解析 然后处理各种注入
-            url = urllib.parse.unquote(log.header.split()[1]).lower()
+            url = log.header.split()[1].lower()
             for i in self.sql_inject:
                 if i in url:
                     return True
