@@ -47,7 +47,7 @@ class Figure_Canvas(FigureCanvas):   # 通过继承FigureCanvas类，使得该�
         ax.set_yticklabels(urls)  # 设置纵坐标的每一个刻度的属性值
         ax.invert_yaxis()  # 反转标度值
         ax.set_xlabel("次数", fontproperties="SimHei")  # 设置横坐标的单位
-        ax.set_title("访问次数最高的前10个IP", fontproperties="SimHei")  # 设定图片的标题
+        ax.set_title("访问次数最高的前10个URL", fontproperties="SimHei")  # 设定图片的标题
 
     def plot_3(self, data):
         attack_data = data[2]
