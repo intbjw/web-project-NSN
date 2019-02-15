@@ -8,6 +8,8 @@ def analyseLog(file_name):
     '''
     loglist = []
     #读取日志文件并解析为列表
+    if file_name == "":
+        return
     with open(file_name) as f:
         lines = f.readlines()
     for line in lines:

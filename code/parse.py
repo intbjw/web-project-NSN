@@ -336,7 +336,7 @@ class Statistics():
             IPset[log.ip] = IPset.get(log.ip,0) + 1
         IPset = sorted(IPset.items(),key=lambda x:x[1],reverse = True)
 
-        return IPset
+        return IPset[:10]
 
     def CountURL(self,logs):
         URLset = {}
@@ -345,7 +345,7 @@ class Statistics():
             o = urlparse(url)
             URLset[o[2]] = URLset.get(o[2],0) + 1
         URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
-        return URLset
+        return URLset[:10]
 
     def CountAttack(self,Attack):
         Attackset = {}
