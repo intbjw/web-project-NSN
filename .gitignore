@@ -105,3 +105,4 @@ venv.bak/
 .idea/workspace.xml
 *.xml
 .idea/web-project-NSN.iml
+*.iml
