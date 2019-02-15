@@ -371,8 +371,8 @@
    <slot>slot_btn_chooseFile()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>125</x>
-     <y>67</y>
+     <x>100</x>
+     <y>73</y>
     </hint>
     <hint type="destinationlabel">
      <x>162</x>
@@ -380,9 +380,43 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>pushButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slot_btn_start()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>164</x>
+     <y>62</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>328</x>
+     <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_3</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slot_btn_search()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>634</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>751</x>
+     <y>79</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
  <slots>
   <signal>signal1()</signal>
   <slot>slot_btn_chooseFile()</slot>
+  <slot>slot_btn_start()</slot>
+  <slot>slot_btn_search()</slot>
  </slots>
 </ui>

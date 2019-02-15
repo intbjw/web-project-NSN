@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'web1.0.ui'
+# Form implementation generated from reading ui file 'web.ui'
 #
 # Created by: PyQt5 UI code generator 5.11.3
 #
@@ -144,10 +144,12 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         self.tabWidget.setCurrentIndex(0)
         self.pushButton_open.clicked.connect(Ui_MainWindow.slot_btn_chooseFile)
+        self.pushButton.clicked.connect(Ui_MainWindow.slot_btn_start)
+        self.pushButton_3.clicked.connect(Ui_MainWindow.slot_btn_search)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def slot_btn_chooseFile(self):
-        fileName_choose, filetype = QFileDialog.getOpenFileName(None,"选取日志",Ui_MainWindow.cwd,"logs Files (*.log);;All Files (*)")
+        fileName_choose, filetype = QFileDialog.getOpenFileName(None,"选取日志",Ui_MainWindow.cwd,"All Files (*);;logs Files (*.log)")
         #没有选择文件
         if fileName_choose == "":
             print("\n取消选择")
@@ -156,6 +158,17 @@ class Ui_MainWindow(object):
         print("\n你选择的文件为:")
         print(fileName_choose)
         print("文件筛选器类型: ", filetype)
+    def slot_btn_start(self):
+        #分析程序开始
+        print("分析")
+        pass
+    def slot_btn_search(self):
+        #搜索事件
+        #str = self.textEdit.toPlainText()
+        #print(str)
+        print('1')
+        pass
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "web日志分析工具"))
@@ -194,3 +207,4 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), _translate("MainWindow", "表三"))
         self.groupBox_4.setTitle(_translate("MainWindow", "攻击次数"))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "表四"))
+
