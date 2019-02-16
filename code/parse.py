@@ -6,8 +6,8 @@ import re
 from urllib.parse import urlparse
 from urllib.parse import quote,unquote
 import json
+
 #用于解析web目录的一个类
-#webRisk类尚有很多欠缺的地方  需要进行补充
 class Log():
     '''
     该类用于表示一个web日志，其包含一个日志的各种属性
@@ -23,9 +23,9 @@ class Log():
         self.ip = s[0].split()[0]
         #日期设计成一个类
         self.date = WebDate(s[0].split()[-2][1:])
-        #email和用户名字这里不再获取
         #得到未被进一步分割的首部字段
-        self.header = unquote(s[1])
+        #不要提前url解码和分割，有些参数带空格的，影响解析
+        self.header = s[1]
         #得到状态码和数据长度
         self.status_code = int(s[2].split()[0])
         try:
@@ -46,7 +46,7 @@ class Log():
                     r"RPS/HTTP PROXY":"RPS",
                     r"WordPress/\d{1,3}[.]\d{1,3}[.]\d{1,3};":"WordPress",
                     r"Apache":"Apache",
-                    r"Mozilla/\d.\d [(]compatible: MSIE \d{1,2}.\d; Windows NT \d{1,2}.\d":"IE"
+                    r"Mozilla/\d.\d [(]compatible[:;] MSIE \d{1,2}[.]\d; Windows NT \d{1,2}[.]\d":"IE",
         }
         for i in patterns.keys():
             compile = re.compile(i)
@@ -107,7 +107,7 @@ class WebRisk():
         self.logs = logs
         self.risk_level = 0
         self.black_agent = ("ZmEu","Baiduspider","python-requests")
-        self.sql_inject = ("select","/**/","or","#","--","and","union","from","where")
+        self.sql_inject = ("select"," ","or","#","--","and","union","from","where","insert","update")
         self.xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
         self.shell_inject = ("chmod","curl","sh","wget")
         self.date = logs[0].date.raw_date
@@ -168,7 +168,7 @@ class WebRisk():
         time = self.logs[0].date.getSec()
         for log in self.logs:
             #将所有出现的资源添加到一个集合中
-            path_set.add(urllib.parse.urlparse(log.header.split()[1]).path)
+            path_set.add(urllib.parse.urlparse(unquote(log.header.split()[1])).path)
             #如果存在2秒内进行一次请求
             if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
                 count += 1
@@ -186,17 +186,23 @@ class WebRisk():
         else:
             return False
     def isSqlInjection(self):
-        #建议利用一下正则匹配进行完善 第一版先进行简单的处理
-        #暂时先用网上这个吧  以后在详细处理
-        raw_str = r"""/select(\s)+|insert(\s)+|update(\s)+|(\s)+and(\s)+|(\s)+or(\s)+|delete(\s)+|\'|\/\*|\*|\.\.\/|\.\/|union(\s)+|into(\s)+|load_file(\s)+|outfile(\s)+"""
+        #正则和关键字检查互相辅助
+        raw_str = [r"select [0-9a-z_$,]+ from [0-9a-z_$]+",
+        r"'.*or''=",r"'.*or [0-9a-z]*(=| =| = )[0-9a-z]*",
+        r"or .*? (--|#)"
+        ]
         for log in self.logs:
-            url = log.header.split()[1].lower()
+            query = unquote(log.header.split()[1]).lower()
+            #将查询字符串中的连接符转换为空格
+            query.replace("+"," ")
+            query.replace("/**/"," ")
             for i in self.sql_inject:
-                if i in url:
+                if i in query:
                     return True
-        match = re.search(raw_str,url)
-        if match:
-            return True    
+        for i in raw_str:
+            match = re.search(i,query)
+            if match:
+                return True
         return False
     def isXss(self):
         #暂定正则表达是是这个，会在后续升级中进行改进
@@ -212,7 +218,7 @@ class WebRisk():
         onrowsdelete|onrowsinserted|onscroll|onselect|onselectionchange|onselectstart|onstart|onstop|onsubmit|
         onunload(\s)+"""
         for log in self.logs:
-            url = log.header.split()[1].lower()
+            url = unquote(log.header.split()[1]).lower()
             query = urlparse(url)[4]
             if query in self.xss_inject:
                 return True
@@ -234,7 +240,7 @@ class WebRisk():
         count = 0
         time = self.logs[0].date.getSec()
         for log in self.logs:
-            url = log.header.split()[1].lower()
+            url = unquote(log.header.split()[1]).lower()
             if log.date.sec_minutes(time,log.date.getSec()) < 2:
                 url = urllib.parse.urlparse(url).path
                 for i in pwd_dir:
@@ -263,7 +269,7 @@ class WebRisk():
             ]
         blackkey = ("shell_exec","passthru","popen","proc_popenla","phpinfo()")
         for log in self.logs:
-            url = log.header.split()[1].lower()
+            url = unquote(log.header.split()[1]).lower()
             for i in blackkey:
                 if i in url:
                     return True
@@ -290,7 +296,7 @@ class WebRisk():
             if log.user_agent == "-" or log.user_agent in self.black_agent:
                 return True
             #url解析 然后处理各种注入
-            url = log.header.split()[1].lower()
+            url = unquote(log.header.split()[1]).lower()
             for i in self.sql_inject:
                 if i in url:
                     return True
@@ -359,7 +365,7 @@ class Statistics():
     def CountURL(self,logs):
         URLset = {}
         for log in logs:
-            url = log.header.split()[1]
+            url = unquote(log.header.split()[1])
             o = urlparse(url)
             URLset[o[2]] = URLset.get(o[2],0) + 1
         URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
