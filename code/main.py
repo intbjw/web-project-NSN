@@ -12,7 +12,7 @@ class Mainwindow(QMainWindow):
     def slot_btn_start(self):
         #分析程序开始,绘制相关的表格
         Ui_MainWindow.set = analyse.analyseLog(Ui_MainWindow.fileName_choose)
-        print(Ui_MainWindow.set)
+        #print(Ui_MainWindow.set)
         with open("data.json", "r") as f:
             datas = f.read()
             datas = eval(datas)
