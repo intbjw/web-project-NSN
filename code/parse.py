@@ -39,12 +39,14 @@ class Log():
     def parseUserAgent(self,s):
         
         patterns ={ r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5} [(].+?[)] Chrome/.*? Safari/\d{1,5}[.]\d{1,5}":"Chrome",
-                    r"python-requests/\d[.]\d[.]\d":"python-requests",
+                    r"python-requests/\d[.]\d{1,2}[.]\d":"python-requests",
                     r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3} [(].+?[)] Version/.*? Safari/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(Mac os)",
                     r"Mozilla/\d[.]\d [(]iPhone;.*?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(iPhone)",
-                    r"Mozilla/\d[.]\d [(].+?[)] Gecko/\d+ Firefox":"Firefox",
+                    r"Mozilla/\d[.]\d [(].+?[)] Gecko/\d+ [ 0-9a-zA-Z.()/].+Firefox":"Firefox",
                     r"RPS/HTTP PROXY":"RPS",
-                    r"WordPress/\d{1,3}[.]\d{1,3}[.]\d{1,3};":"WordPress"
+                    r"WordPress/\d{1,3}[.]\d{1,3}[.]\d{1,3};":"WordPress",
+                    r"Apache":"Apache",
+                    r"Mozilla/\d.\d [(]compatible: MSIE \d{1,2}.\d; Windows NT \d{1,2}.\d":"IE"
         }
         for i in patterns.keys():
             compile = re.compile(i)
