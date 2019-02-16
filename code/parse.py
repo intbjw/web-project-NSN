@@ -35,7 +35,23 @@ class Log():
             self.length = 0
         #得到用户提出请求时所在的URL和user-agent
         self.url = s[3]
-        self.user_agent = s[5]
+        self.user_agent = self.parseUserAgent(s[5])
+    def parseUserAgent(self,s):
+        
+        patterns ={ r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5} [(].+?[)] Chrome/.*? Safari/\d{1,5}[.]\d{1,5}":"Chrome",
+                    r"python-requests/\d[.]\d[.]\d":"python-requests",
+                    r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3} [(].+?[)] Version/.*? Safari/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(Mac os)",
+                    r"Mozilla/\d[.]\d [(]iPhone;.*?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(iPhone)",
+                    r"Mozilla/\d[.]\d [(].+?[)] Gecko/\d+ Firefox":"Firefox",
+                    r"RPS/HTTP PROXY":"RPS",
+                    r"WordPress/\d{1,3}[.]\d{1,3}[.]\d{1,3};":"WordPress"
+        }
+        for i in patterns.keys():
+            compile = re.compile(i)
+            if compile.search(s):
+                return patterns[i]
+        return "Unknow type("+s+")"
+
 class WebDate():
     #29/Jan/2019:06:28:10
     def __init__(self,date):
