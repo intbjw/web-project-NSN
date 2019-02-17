@@ -20,7 +20,9 @@ class Ui_MainWindow(object):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(1117, 865)
         icon = QtGui.QIcon()
-        icon.addPixmap(QtGui.QPixmap("C:/Users/intbjwww/Downloads/bitbug_favicon (1).ico"), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        icon = QtGui.QIcon()
+        ico_path = os.path.dirname(self.cwd)
+        icon.addPixmap(QtGui.QPixmap(ico_path + '/pic/logo.ico'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
         MainWindow.setWindowIcon(icon)
         MainWindow.setWindowOpacity(2.0)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -124,7 +126,7 @@ class Ui_MainWindow(object):
         self.graphicsView_3.setObjectName("graphicsView_3")
         self.tabWidget.addTab(self.tab_4, "")
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(860, 780, 131, 41))
+        self.label.setGeometry(QtCore.QRect(820, 780, 171, 41))
         font = QtGui.QFont()
         font.setFamily("Lucida Handwriting")
         font.setPointSize(14)
@@ -133,10 +135,10 @@ class Ui_MainWindow(object):
         self.label.setFont(font)
         self.label.setObjectName("label")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(990, 770, 51, 61))
+        self.label_2.setGeometry(QtCore.QRect(960, 770, 81, 61))
         self.label_2.setObjectName("label_2")
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(400, 20, 301, 51))
+        self.label_3.setGeometry(QtCore.QRect(350, 10, 361, 71))
         self.label_3.setObjectName("label_3")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -155,12 +157,11 @@ class Ui_MainWindow(object):
         self.pushButton.clicked.connect(MainWindow.slot_btn_start)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-
     def slot_btn_chooseFile(self):
-        fileName_choose, filetype = QFileDialog.getOpenFileName(None, "选取日志", Ui_MainWindow.cwd, "All Files (*);;logs Files (*.log)")
+        fileName_choose, filetype = QFileDialog.getOpenFileName(None, "选取日志", Ui_MainWindow.cwd,
+                                                                "All Files (*);;logs Files (*.log)")
         # 选择完文件之后返回选择文件的路径
         Ui_MainWindow.fileName_choose = fileName_choose
-
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "web日志分析工具"))
