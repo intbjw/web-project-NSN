@@ -42,7 +42,7 @@ class Log():
                     r"python-requests/\d[.]\d{1,2}[.]\d":"python-requests",
                     r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3} [(].+?[)] Version/.*? Safari/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(Mac os)",
                     r"Mozilla/\d[.]\d [(]iPhone;.*?[)] AppleWebKit/\d{1,5}[.]\d{1,5}[.]\d{1,3}":"Safari(iPhone)",
-                    r"Mozilla/\d[.]\d [(].+?[)] Gecko/\d+ [ 0-9a-zA-Z.()/].+Firefox":"Firefox",
+                    r"Mozilla/\d[.]\d [(].+?[)] Gecko/\d+ [ 0-9a-zA-Z.()/]*Firefox":"Firefox",
                     r"RPS/HTTP PROXY":"RPS",
                     r"WordPress/\d{1,3}[.]\d{1,3}[.]\d{1,3};":"WordPress",
                     r"Apache":"Apache",
@@ -107,8 +107,7 @@ class WebRisk():
         self.logs = logs
         self.risk_level = 0
         self.black_agent = ("ZmEu","Baiduspider","python-requests")
-        self.sql_inject = ("select"," ","or","#","--","and","union","from","where","insert","update")
-        self.xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
+        self.sql_inject = ("select"," ","#","--","and","union","from","where","insert","update")
         self.shell_inject = ("chmod","curl","sh","wget")
         self.date = logs[0].date.raw_date
         self.risktype = ""
@@ -124,16 +123,17 @@ class WebRisk():
         if isrisk:
             #除文件爆破之外 似乎所有的判断对于post都是无效的
             #漏洞威胁分4个等级，4是最高级,存在多种漏洞取最高级
+            #优化了顺序  防止低级覆盖高级
             if self.isDirBusetr():
                 self.risk_level = 1
                 self.risktype += "目录爆破,"
                 self.riskdescribe += "网站后台目录存在被爆破风险."
                 self.DirBusetr_num = self.DirBusetr_num + 1
-            if self.isCmdExecute():
-                self.risk_level = 4
-                self.risktype += "命令执行,"
-                self.riskdescribe += "疑似被执行恶意命令."
-                self.CmdExecute_num = self.CmdExecute_num + 1
+            if self.isXss():
+                self.risk_level = 2
+                self.risktype += "xss攻击,"
+                self.riskdescribe += "疑似遭到XSS攻击."
+                self.Xss_num = self.Xss_num + 1
             if self.isPasswdBuster():
                 self.risk_level = 3
                 self.risktype += "口令猜解,"
@@ -144,11 +144,11 @@ class WebRisk():
                 self.risktype += "SQL注入,"
                 self.riskdescribe += "疑似发现SQL注入行为."
                 self.SqlInjection_num = self.SqlInjection_num + 1
-            if self.isXss():
-                self.risk_level = 2
-                self.risktype += "xss攻击,"
-                self.riskdescribe += "疑似遭到XSS攻击."
-                self.Xss_num = self.Xss_num + 1
+            if self.isCmdExecute():
+                self.risk_level = 4
+                self.risktype += "命令执行,"
+                self.riskdescribe += "疑似被执行恶意命令."
+                self.CmdExecute_num = self.CmdExecute_num + 1
             self.risktype = self.risktype[:-1]
 
     def isDirBusetr(self):
@@ -218,15 +218,23 @@ class WebRisk():
         onrowsdelete|onrowsinserted|onscroll|onselect|onselectionchange|onselectstart|onstart|onstop|onsubmit|
         onunload(\s)+"""
         for log in self.logs:
-            url = unquote(log.header.split()[1]).lower()
-            query = urlparse(url)[4]
-            if query in self.xss_inject:
+            #先将url解析出来，然后将+号等特殊符号转换为空格
+            url = unquote(log.header.split()[1]).lower().replace("+"," ")
+            patterns = [
+                r"<script>.*</script>",
+                r"alert[(].*?[)]",
+                r"<a .*?=.*?>.*?</a>",
+            ]
+            for pattern in patterns:
+                compile = re.compile(pattern)
+                match = compile.search(url)
+                if match:
+                    return True
+            #raw_str主要起辅助作用 以后逐渐删掉里面的内容
+            compile = re.compile(raw_str)
+            if compile.search(url):
                 return True
-            pattern = re.compile(raw_str)
-            match = pattern.search(query)
-            if match:
-                return True
-            return False
+        return False
     def isPasswdBuster(self):
         '''
         该方法用于确定访问中是否存在口令猜解行为
@@ -288,7 +296,7 @@ class WebRisk():
         存在威胁的可能
         '''
         #注意大小写 注意对URL编码的请求进行解码
-        
+        xss_inject = ("script","javascript","alert","href","<a","src","var","Image")
         if len(self.logs) >= 200:
                 return True
         for log in self.logs:
@@ -303,8 +311,8 @@ class WebRisk():
             for i in self.shell_inject:
                 if i in url:
                     return True
-            for i in self.xss_inject:
-                if i in self.xss_inject:
+            for i in xss_inject:
+                if i in xss_inject:
                     return True
             if self.isPasswdBuster():#数据量少的情况下直接对口令猜解进行一次完整测试
                 return True
