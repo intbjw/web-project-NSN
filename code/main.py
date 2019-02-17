@@ -2,7 +2,7 @@ import sys
 import analyse
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem ,QMessageBox
-from qtpy import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 from web import Ui_MainWindow
 from figure import *
 class Mainwindow(QMainWindow):
