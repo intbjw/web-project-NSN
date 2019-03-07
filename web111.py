@@ -17,6 +17,7 @@ class Form(QWidget):
 
         self.setLayout(mainLayout)
         self.setWindowTitle("Hello Qt")
+        ######  
         tmp.load(QUrl('file:///C:/Users/intbjwww/PycharmProjects/web-project-NSN/code/render.html'))
         tmp.show()
 
