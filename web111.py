@@ -1,29 +1,22 @@
+import sys
+import os
 from PyQt5.QtCore import *
+from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-from PyQt5.QtWebKitWidgets import *
+from PyQt5.QtWebEngineWidgets import *
 
-
-class Form(QWidget):
-    def __init__(self, parent=None):
-        super(Form, self).__init__(parent)
-
-        tmp = QWebView()
-        self.resize(1235, 655)
-        buttonLayout1 = QVBoxLayout()
-        buttonLayout1.addWidget(tmp)
-
-        mainLayout = QGridLayout()
-        mainLayout.addLayout(buttonLayout1, 1, 1)
-
-        self.setLayout(mainLayout)
-        self.setWindowTitle("Hello Qt")
-        tmp.load(QUrl('file:///C:/Users/intbjwww/PycharmProjects/web-project-NSN/code/render.html'))
-        tmp.show()
-
-
+class MainWindow(QMainWindow):
+    def __init__(self):
+        cwd = os.getcwd()
+        super(MainWindow, self).__init__()
+        self.setWindowTitle('攻击来源')
+        self.setGeometry(100,100,1250,630)
+        self.browser=QWebEngineView()
+        #加载外部的web界面
+        self.browser.load(QUrl('file:///C:/Users/intbjwww/PycharmProjects/web-project-NSN/code/render.html'))
+        self.setCentralWidget(self.browser)
 if __name__ == '__main__':
-    import sys
-    app = QApplication(sys.argv)
-    screen = Form()
-    screen.show()
-    sys.exit(app.exec_())
+    app=QApplication(sys.argv)
+    win=MainWindow()
+    win.show()
+    app.exit(app.exec_())
