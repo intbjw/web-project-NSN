@@ -428,7 +428,6 @@ class Statistics():
         for log in logs:
             IPset[log.ip] = IPset.get(log.ip,0) + 1
         IPset = sorted(IPset.items(),key=lambda x:x[1],reverse = True)
-
         return IPset[:10]
 
     def CountURL(self,logs):

@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1117</width>
-    <height>865</height>
+    <width>1419</width>
+    <height>916</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>C:/Users/intbjwww/Downloads/bitbug_favicon (1).ico</normaloff>C:/Users/intbjwww/Downloads/bitbug_favicon (1).ico</iconset>
+    <normaloff>../../../Downloads/bitbug_favicon (1).ico</normaloff>../../../Downloads/bitbug_favicon (1).ico</iconset>
   </property>
   <property name="windowOpacity">
    <double>2.000000000000000</double>
@@ -24,9 +24,9 @@
    <widget class="QFrame" name="frame_top">
     <property name="geometry">
      <rect>
-      <x>30</x>
-      <y>770</y>
-      <width>321</width>
+      <x>50</x>
+      <y>800</y>
+      <width>551</width>
       <height>51</height>
      </rect>
     </property>
@@ -62,14 +62,27 @@
       <string>日志分析</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="pushButton_2">
+     <property name="geometry">
+      <rect>
+       <x>400</x>
+       <y>10</y>
+       <width>71</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>IP溯源</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>60</x>
       <y>70</y>
-      <width>1061</width>
-      <height>691</height>
+      <width>1301</width>
+      <height>721</height>
      </rect>
     </property>
     <property name="font">
@@ -86,8 +99,8 @@
       <rect>
        <x>10</x>
        <y>30</y>
-       <width>1051</width>
-       <height>651</height>
+       <width>1271</width>
+       <height>681</height>
       </rect>
      </property>
      <property name="currentIndex">
@@ -98,14 +111,14 @@
      </property>
      <widget class="QWidget" name="tab">
       <attribute name="title">
-       <string>表一</string>
+       <string>攻击分析</string>
       </attribute>
       <widget class="QTableWidget" name="table">
        <property name="geometry">
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>1031</width>
+         <width>1261</width>
          <height>621</height>
         </rect>
        </property>
@@ -191,15 +204,15 @@
      </widget>
      <widget class="QWidget" name="tab_2">
       <attribute name="title">
-       <string>表二</string>
+       <string>访问最高的IP</string>
       </attribute>
       <widget class="QGroupBox" name="groupBox_2">
        <property name="geometry">
         <rect>
          <x>10</x>
          <y>0</y>
-         <width>1021</width>
-         <height>611</height>
+         <width>1251</width>
+         <height>641</height>
         </rect>
        </property>
        <property name="title">
@@ -210,8 +223,8 @@
          <rect>
           <x>10</x>
           <y>20</y>
-          <width>1001</width>
-          <height>581</height>
+          <width>1231</width>
+          <height>621</height>
          </rect>
         </property>
        </widget>
@@ -219,7 +232,7 @@
      </widget>
      <widget class="QWidget" name="tab_3">
       <attribute name="title">
-       <string>表三</string>
+       <string>访问最高的URL</string>
       </attribute>
       <widget class="QGroupBox" name="groupBox_3">
        <property name="geometry">
@@ -247,7 +260,7 @@
      </widget>
      <widget class="QWidget" name="tab_4">
       <attribute name="title">
-       <string>表四</string>
+       <string>攻击次数</string>
       </attribute>
       <widget class="QGroupBox" name="groupBox_4">
        <property name="geometry">
@@ -278,8 +291,8 @@
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>820</x>
-      <y>780</y>
+      <x>910</x>
+      <y>810</y>
       <width>171</width>
       <height>41</height>
      </rect>
@@ -299,8 +312,8 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>960</x>
-      <y>770</y>
+      <x>1090</x>
+      <y>800</y>
       <width>81</width>
       <height>61</height>
      </rect>
@@ -312,7 +325,7 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>350</x>
+      <x>510</x>
       <y>10</y>
       <width>361</width>
       <height>71</height>
@@ -328,7 +341,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1117</width>
+     <width>1419</width>
      <height>23</height>
     </rect>
    </property>
@@ -351,7 +364,7 @@
    <hints>
     <hint type="sourcelabel">
      <x>100</x>
-     <y>73</y>
+     <y>803</y>
     </hint>
     <hint type="destinationlabel">
      <x>162</x>
@@ -366,12 +379,28 @@
    <slot>slot_btn_start()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>164</x>
-     <y>62</y>
+     <x>230</x>
+     <y>803</y>
     </hint>
     <hint type="destinationlabel">
      <x>328</x>
      <y>92</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>pushButton_2</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>slot_btn_ip()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>471</x>
+     <y>820</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>312</x>
+     <y>54</y>
     </hint>
    </hints>
   </connection>
@@ -380,6 +409,6 @@
   <signal>signal1()</signal>
   <slot>slot_btn_chooseFile()</slot>
   <slot>slot_btn_start()</slot>
-  <slot>slot_btn_search()</slot>
+  <slot>slot_btn_ip()</slot>
  </slots>
 </ui>

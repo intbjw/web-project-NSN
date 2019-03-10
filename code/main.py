@@ -1,4 +1,14 @@
 import sys
+import webbrowser
+
+import requests
+import os
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+from PyQt5.QtWebEngineWidgets import *
+from pyecharts import Geo
+import sys
 import analyse
 from PyQt5 import QtWidgets
 from PyQt5.QtGui import QBrush, QColor
@@ -65,6 +75,52 @@ class Mainwindow(QMainWindow):
             graphicscene.addWidget(dr)
             self.ui.graphicsView_3.setScene(graphicscene)
             self.ui.graphicsView_3.show()
+    def slot_btn_ip(self):
+        cwd = os.path.abspath('render.html')
+        openUrl(cwd)
+
+#采用百度的api
+def ipGeo(data):
+    geo = Geo(
+        "攻击来源",
+        "精确到市",
+        title_color="#fff",
+        title_pos="center",
+        width=1200,
+        height=600,
+        background_color="#404a59",
+        )
+    attr, value = geo.cast(data)
+    geo.add(
+        "",
+        attr,
+        value,
+        visual_range=[0, 2000],
+        visual_text_color="#fff",
+        symbol_size=15,
+        is_visualmap=True,
+    )
+    geo.render()
+def getipaddress():
+    ipaddress = []
+    with open('data.json') as f:
+        data = f.read()
+        data = eval(data)
+        for i in data:
+            ip = i['ip']
+            r = requests.get('http://api.map.baidu.com/location/ip?ip=' + ip + '&ak=X7K1gs9RPEoakNnYOtcIgPeMaqGu7TVu&coor=bd09ll')
+            result1 = r.json()
+            #print(result1)
+            city = result1['content']['address_detail']['city']
+            ipcount = i['ipcount']
+            ipaddress = ipaddress + [(city,ipcount)]
+    #print(ipaddress)
+    ipGeo(ipaddress)
+def openUrl(url):
+    try:
+        webbrowser.get('chrome').open_new_tab(url)
+    except Exception as e:
+        webbrowser.open_new_tab(url)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     MainWindow = Mainwindow()
