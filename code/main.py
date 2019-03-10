@@ -44,7 +44,7 @@ class Mainwindow(QMainWindow):
                     self.ui.table.setItem(i, 5, QTableWidgetItem(data['user-agent']))
                     if i % 2 ==0 :
                         for j in range(6):
-                            self.ui.table.item(i, j).setBackground(QBrush(QColor(176, 196, 222)))
+                            self.ui.table.item(i, j).setBackground(QBrush(QColor(70,130,180)))
                     if data['level'] == 1:
                         self.ui.table.item(i, 2).setBackground(QBrush(QColor(0,139,139)))
                     if data['level'] == 2:
