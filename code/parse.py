@@ -113,11 +113,13 @@ class WebRisk():
         self.risktype = ""
         self.riskdescribe = ""
         self.ip = logs[0].ip
+        self.ipcount = len(logs)
         self.user_agent = logs[0].user_agent
         self.DirBusetr_num = 0
         self.CmdExecute_num = 0
         self.PasswdBuster_num = 0
         self.SqlInjection_num = 0
+        self.FileInclude_num = 0
         self.Xss_num = 0
         isrisk = self.sifting()
         if isrisk:
@@ -149,6 +151,11 @@ class WebRisk():
                 self.risktype += "命令执行,"
                 self.riskdescribe += "疑似被执行恶意命令."
                 self.CmdExecute_num = self.CmdExecute_num + 1
+            if self.isfileinclude():
+                self.risk_level = 4
+                self.risktype += "文件包含,"
+                self.riskdescribe += "疑似请求中包含文件."
+                self.FileInclude_num = self.FileInclude_num + 1
             self.risktype = self.risktype[:-1]
 
     def isDirBusetr(self):
@@ -287,7 +294,35 @@ class WebRisk():
                 if match:
                     return True
         return False
-
+    def isfileinclude(self):
+        '''
+        实现思路
+        检测URL中传递的参数
+        如果传递的参数是一个文件的话 则视为文件包含
+        '''
+        patterns = [
+            r"*.txt",
+            r"*.php",
+            r"*.conf",
+            r"*.log",
+            r"*.xml"
+        ]
+        for log in self.logs:
+            url = unquote(log.header.split()[1]).lower()
+            params_pos = url.find('?')
+            params = url[params_pos:].split('&')
+            for param in params:
+                #得到了很多的参数 其中包括可能存在的文件地址参数
+                try:
+                    p = param.split("=")[1]
+                    for i in patterns:
+                        #已经是小写了，好像忽略大小写没啥必要加了
+                        match = re.search(i,p,re.IGNORECASE)
+                        if match:
+                            return True
+                except:
+                    pass
+        return False
     def sifting(self):
         '''
         该类用于初步判断某IP的请求是可能否存在威胁
@@ -350,6 +385,7 @@ def makejson(risk_lists):
             dic["level"] = risk.risk_level
             dic["describe"] = risk.riskdescribe
             dic["type"] = risk.risktype
+            dic['ipcount'] = risk.ipcount
             js_result.append(dic)
     js_str = json.dumps(js_result)
     with open("data.json","w") as f:
@@ -386,5 +422,12 @@ class Statistics():
         Attackset['口令猜解'] = Attackset.get('口令猜解', 0) + Attack[2]
         Attackset['SQL注入'] = Attackset.get('SQL注入', 0) + Attack[3]
         Attackset['xss攻击'] = Attackset.get('xss攻击', 0) + Attack[4]
+        '''
+        临时加进来的一个 注意不要越界
+        到时候在把文件包含加进来吧
+        '''
+        #暂时改好了 修改了analyse.py中数组元素的个数 增添了统计时关于文件包含的统计
+        #并且 图表成功的自动拓展了
+        Attackset['文件包含'] = Attackset.get('文件包含',0) + Attack[5]
         Attackset = sorted(Attackset.items(), key=lambda x: x[1], reverse=True)
         return Attackset
