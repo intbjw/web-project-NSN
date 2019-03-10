@@ -16,6 +16,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QTableWidgetItem ,QMessag
 from PyQt5 import QtCore, QtGui
 from web import Ui_MainWindow
 from figure import *
+import qdarkstyle
 class Mainwindow(QMainWindow):
     def __init__(self,parent=None):
         super(Mainwindow,self).__init__(parent)
@@ -45,9 +46,9 @@ class Mainwindow(QMainWindow):
                         for j in range(6):
                             self.ui.table.item(i, j).setBackground(QBrush(QColor(176, 196, 222)))
                     if data['level'] == 1:
-                        self.ui.table.item(i, 2).setBackground(QBrush(QColor(176, 196, 222)))
+                        self.ui.table.item(i, 2).setBackground(QBrush(QColor(0,139,139)))
                     if data['level'] == 2:
-                        self.ui.table.item(i, 2).setBackground(QBrush(QColor(255,255,0)))
+                        self.ui.table.item(i, 2).setBackground(QBrush(QColor(138,43,226)))
                     if data['level'] == 3:
                         self.ui.table.item(i, 2).setBackground(QBrush(QColor(238,130,238)))
                     if data['level'] == 4:
@@ -124,13 +125,10 @@ def getipaddress():
                 ipaddress = ipaddress + [(city,ipcount)]
     print(ipaddress)
     ipGeo(ipaddress)
-def openUrl(url):
-    try:
-        webbrowser.get('chrome').open_new_tab(url)
-    except Exception as e:
-        webbrowser.open_new_tab(url)
 if __name__ == '__main__':
     app = QApplication(sys.argv)
+    dark_stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     MainWindow = Mainwindow()
+    app.setStyleSheet(dark_stylesheet)
     MainWindow.show()
     sys.exit(app.exec_())
