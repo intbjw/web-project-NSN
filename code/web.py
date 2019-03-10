@@ -13,7 +13,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
 from PyQt5.QtWidgets import QFileDialog, QHeaderView, QPushButton, QDialog, QTabWidget
 import requests
 from pyecharts import Geo
-from PyQt5.QtGui import QColor
+
 
 class Ui_MainWindow(object):
     cwd = os.getcwd()
@@ -27,8 +27,10 @@ class Ui_MainWindow(object):
         MainWindow.setWindowIcon(icon)
         MainWindow.setWindowOpacity(2.0)
         MainWindow.setLayoutDirection(QtCore.Qt.LeftToRight)
+        MainWindow.statusBar().showMessage('这里是状态栏...')
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("")
+        MainWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint)  # 去掉标题栏的代码
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.frame_top = QtWidgets.QFrame(self.centralwidget)
