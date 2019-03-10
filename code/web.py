@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
         self.groupBox.setGeometry(QtCore.QRect(50, 90, 1321, 701))
         font = QtGui.QFont()
         font.setFamily("Adobe 黑体 Std R")
-        font.setPointSize(16)
+        font.setPointSize(14)
         self.groupBox.setFont(font)
         self.groupBox.setObjectName("groupBox")
         self.tabWidget = QtWidgets.QTabWidget(self.groupBox)
@@ -845,7 +845,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), _translate("MainWindow", "攻击次数"))
         self.label.setText(_translate("MainWindow", "design by"))
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:20pt; font-weight:600;\">NSN</span></p></body></html>"))
-        self.label_3.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:28pt; font-weight:600;\">web日志分析工具</span></p></body></html>"))
+        self.label_3.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:24pt; font-weight:600;\">web日志分析工具</span></p></body></html>"))
 
 #采用百度的api
 def ipGeo(data):
