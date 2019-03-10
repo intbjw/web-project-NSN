@@ -76,6 +76,7 @@ class Mainwindow(QMainWindow):
             self.ui.graphicsView_3.setScene(graphicscene)
             self.ui.graphicsView_3.show()
     def slot_btn_ip(self):
+        getipaddress()
         cwd = os.path.abspath('render.html')
         openUrl(cwd)
 
