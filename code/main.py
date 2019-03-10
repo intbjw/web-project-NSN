@@ -75,11 +75,6 @@ class Mainwindow(QMainWindow):
             graphicscene.addWidget(dr)
             self.ui.graphicsView_3.setScene(graphicscene)
             self.ui.graphicsView_3.show()
-    def slot_btn_ip(self):
-        getipaddress()
-        cwd = os.path.abspath('render.html')
-        openUrl(cwd)
-
 #采用百度的api
 def ipGeo(data):
     geo = Geo(
