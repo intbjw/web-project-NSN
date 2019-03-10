@@ -6,8 +6,12 @@
 #
 # WARNING! All changes made in this file will be lost!
 import os
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QFileDialog, QHeaderView
+import re
+
+from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
+from PyQt5.QtWidgets import QFileDialog, QHeaderView, QPushButton, QDialog
+import requests
+from pyecharts import Geo
 
 
 class Ui_MainWindow(object):
@@ -155,7 +159,7 @@ class Ui_MainWindow(object):
         self.tabWidget.setCurrentIndex(0)
         self.pushButton_open.clicked.connect(Ui_MainWindow.slot_btn_chooseFile)
         self.pushButton.clicked.connect(MainWindow.slot_btn_start)
-        self.pushButton_2.clicked.connect(MainWindow.slot_btn_ip)
+        self.pushButton_2.clicked.connect(Ui_MainWindow.slot_btn_ip)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def slot_btn_chooseFile(self):
@@ -163,6 +167,21 @@ class Ui_MainWindow(object):
                                                                 "All Files (*);;logs Files (*.log)")
         # 选择完文件之后返回选择文件的路径
         Ui_MainWindow.fileName_choose = fileName_choose
+    def slot_btn_ip(self):
+        getipaddress()
+        cwd = os.path.abspath('render.html')
+        Dialog = QDialog()
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(1255, 640)
+        Dialog.webEngineView = QtWebEngineWidgets.QWebEngineView(Dialog)
+        Dialog.webEngineView.setGeometry(QtCore.QRect(19, 19, 1211, 630))
+        Dialog.webEngineView.setUrl(QtCore.QUrl.fromLocalFile(cwd))
+        Dialog.webEngineView.setObjectName("webEngineView")
+
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        Dialog.setWindowTitle("IP溯源")
+        Dialog.exec_()
+
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "web日志分析工具"))
@@ -192,4 +211,70 @@ class Ui_MainWindow(object):
         self.label.setText(_translate("MainWindow", "design by"))
         self.label_2.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:20pt; font-weight:600;\">NSN</span></p></body></html>"))
         self.label_3.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:28pt; font-weight:600;\">web日志分析工具</span></p></body></html>"))
+#采用百度的api
+def ipGeo(data):
+    geo = Geo(
+        "攻击来源",
+        "精确到市",
+        title_color="#fff",
+        title_pos="center",
+        width=1200,
+        height=600,
+        background_color="#404a59",
+        )
+    attr, value = geo.cast(data)
+    geo.add(
+        "",
+        attr,
+        value,
+        visual_range=[0, 2000],
+        visual_text_color="#fff",
+        symbol_size=15,
+        is_visualmap=True,
+    )
+    geo.render()
+def getipaddress():
+    ipaddress = []
+    with open('data.json') as f:
+        data = f.read()
+        data = eval(data)
+        for i in data:
+            ip = i['ip']
+            r = requests.get('http://api.map.baidu.com/location/ip?ip=' + ip + '&ak=X7K1gs9RPEoakNnYOtcIgPeMaqGu7TVu&coor=bd09ll')
+            #result1 = json.dumps(r.text)
+            result1 = eval(r.text)
+            if result1['status'] == 0:
+                city = result1['content']['address_detail']['city']
+                if city=='':
+                    nr = requests.get('http://www.ip138.com/ips138.asp?ip='+ip+'&action=2')
+                    nr.encoding = nr.apparent_encoding
+                    try:
+                        rlt = re.search(r'<li>本站数据：.*市',nr.text).group(0)
 
+                    except:
+                        print(ip)
+                    pos = rlt.find('省')
+                    rlt = rlt[pos + 1:].replace('市', '')
+                    city = rlt
+                    print(city)
+                ipcount = i['ipcount']
+                ipaddress = ipaddress + [(city,ipcount)]
+    print(ipaddress)
+    ipGeo(ipaddress)
+
+class Ui_Dialog(object):
+    cwd = os.path.abspath('render.html')
+    def setupUi(self, Dialog):
+        Dialog.setObjectName("Dialog")
+        Dialog.resize(1255, 697)
+        self.webEngineView = QtWebEngineWidgets.QWebEngineView(Dialog)
+        self.webEngineView.setGeometry(QtCore.QRect(19, 19, 1211, 661))
+        self.webEngineView.setUrl(QtCore.QUrl.fromLocalFile(self.cwd))
+        self.webEngineView.setObjectName("webEngineView")
+
+        self.retranslateUi(Dialog)
+        QtCore.QMetaObject.connectSlotsByName(Dialog)
+
+    def retranslateUi(self, Dialog):
+        _translate = QtCore.QCoreApplication.translate
+        Dialog.setWindowTitle(_translate("Dialog", "IP溯源"))
