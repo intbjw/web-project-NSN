@@ -272,7 +272,7 @@ class WebRisk():
                 url = unquote(log.header.split()[1]).lower()
             except:
                 url = '-'
-            if log.date.sec_minutes(time,log.date.getSec()) < 2:
+            if log.date.sec_minutes(time,log.date.getSec()) < 20:
                 url = urllib.parse.urlparse(url).path
                 for i in pwd_dir:
                     if i in url:
