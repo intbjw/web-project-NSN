@@ -20,7 +20,7 @@ def analyseLog(file_name):
     URLset = attack.CountURL(loglist)
     IPset = attack.CountIP(loglist)
     #Attack记录攻击次数，每个ip的一次攻击算一次攻击
-    Attack = [0,0,0,0,0]
+    Attack = [0,0,0,0,0,0]
     #按IP划分
     iplist = parseIp(loglist)
     #威胁分析
@@ -33,6 +33,7 @@ def analyseLog(file_name):
         Attack[2] = risk.PasswdBuster_num + Attack[2]
         Attack[3] = risk.SqlInjection_num + Attack[3]
         Attack[4] = risk.Xss_num + Attack[4]
+        Attack[5] = risk.FileInclude_num + Attack[5]
         risklist.append(risk)
     Attackset = attack.CountAttack(Attack)
     #生成json数据
