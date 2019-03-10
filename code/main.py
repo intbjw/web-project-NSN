@@ -1,6 +1,6 @@
 import sys
 import webbrowser
-
+import re
 import requests
 import os
 from PyQt5.QtCore import *
@@ -110,11 +110,24 @@ def getipaddress():
         for i in data:
             ip = i['ip']
             r = requests.get('http://api.map.baidu.com/location/ip?ip=' + ip + '&ak=X7K1gs9RPEoakNnYOtcIgPeMaqGu7TVu&coor=bd09ll')
-            result1 = r.json()
-            city = result1['content']['address_detail']['city']
-            ipcount = i['ipcount']
-            ipaddress = ipaddress + [(city,ipcount)]
-    #print(ipaddress)
+            #result1 = json.dumps(r.text)
+            result1 = eval(r.text)
+            if result1['status'] == 0:
+                city = result1['content']['address_detail']['city']
+                if city=='':
+                    nr = requests.get('http://www.ip138.com/ips138.asp?ip='+ip+'&action=2')
+                    nr.encoding = nr.apparent_encoding
+                    try:
+                        rlt = re.search(r'<li>本站数据：.*市',nr.text).group(0)
+                    except:
+                        print(ip)
+                    pos = rlt.find('省')
+                    rlt = rlt[pos+1:].replace('市','')
+                    city = rlt
+                    print(city)
+                ipcount = i['ipcount']
+                ipaddress = ipaddress + [(city,ipcount)]
+    print(ipaddress)
     ipGeo(ipaddress)
 def openUrl(url):
     try:
