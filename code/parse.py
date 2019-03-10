@@ -6,7 +6,8 @@ import re
 from urllib.parse import urlparse
 from urllib.parse import quote,unquote
 import json
-
+from html import unescape
+import base64
 #用于解析web目录的一个类
 class Log():
     '''
@@ -184,18 +185,18 @@ class WebRisk():
             except:
                 pass
             #如果存在2秒内进行一次请求
-            if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
+            if WebDate.sec_minutes(time,log.date.getSec())<5 and log.status_code == 404:
                 count += 1
             for i in self.black_agent:
                 if log.user_agent == "-" or i in log.user_agent:
                     isspider = True
             time = log.date.getSec()
-        #短时间资源不存在的情况达到500次 或者虽未达到500 但70%及以上的访问均无效
+        #短时间资源不存在的情况达到300次 或者虽未达到300 但70%及以上的访问均无效
         #在大量的访问下，若访问路径数大于阈值，可以确定存在目录爆破行为
-        if (count > 500 or count >= 0.7*len(self.logs)) and len(path_set)>20:
+        if (count > 300 or count >= 0.7*len(self.logs)) and len(path_set)>20:
             return True
-        #30%以上的访问均无效,且请求头异常,疑似爬虫 或者,访问的资源位置
-        elif count>0.3 and isspider:
+        #20%以上的访问均无效,且请求头异常,疑似爬虫 或者,访问的资源位置
+        elif count>0.2 and isspider:
             return True
         else:
             return False
@@ -222,38 +223,35 @@ class WebRisk():
                 return True
         return False
     def isXss(self):
-        #暂定正则表达是是这个，会在后续升级中进行改进
-        raw_str = r"""href|xss|javascript|vbscript|expression|applet|meta|xml|blink|link|style|script|embed|object|
-        iframe|frame|frameset|ilayer|layer|bgsound|title|base|onabort|onactivate|onafterprint|onafterupdate|
-        onbeforeactivate|onbeforecopy|onbeforecut|onbeforedeactivate|onbeforeeditfocus|onbeforepaste|onbeforeprint|
-        onbeforeunload|onbeforeupdate|onblur|onbounce|oncellchange|onchange|onclick|oncontextmenu|oncontrolselect|
-        oncopy|oncut|ondataavailable|ondatasetchanged|ondatasetcomplete|ondblclick|ondeactivate|ondrag|ondragend|
-        ondragenter|ondragleave|ondragover|ondragstart|ondrop|onerror|onerrorupdate|onfilterchange|onfinish|onfocus|
-        onfocusin|onfocusout|onhelp|onkeydown|onkeypress|onkeyup|onlayoutcomplete|onload|onlosecapture|onmousedown|
-        onmouseenter|onmouseleave|onmousemove|onmouseout|onmouseover|onmouseup|onmousewheel|onmove|onmoveend|onmovestart|
-        onpaste|onpropertychange|onreadystatechange|onreset|onresize|onresizeend|onresizestart|onrowenter|onrowexit|
-        onrowsdelete|onrowsinserted|onscroll|onselect|onselectionchange|onselectstart|onstart|onstop|onsubmit|
-        onunload(\s)+"""
         for log in self.logs:
             #先将url解析出来，然后将+号等特殊符号转换为空格
             try:
+                #先转化为小写
                 url = unquote(log.header.split()[1]).lower().replace("+"," ")
+                #将实体字符转化为普通字符
+                url = unescape(url)
+                #如果采用的字符集利用了base64
+                if url.find('base64,') != -1:
+                    tpattern = r'base64,.*"'
+                    tmatch = re.search(tpattern,url)
+                    if tmatch:
+                        urltmp = tmatch.group()[7:-1]
+                        url = url.replace(urltmp,base64.b64decode(urltmp).decode())
             except:
                 url = '-'
             patterns = [
                 r"<script>.*</script>",
                 r"alert[(].*?[)]",
                 r"<a .*?=.*?>.*?</a>",
+                r'''body onload="alert('.*?')"[><]{0,2}[/]{0,1}body''',
+                r'iframe.*/iframe'
+
             ]
             for pattern in patterns:
                 compile = re.compile(pattern)
                 match = compile.search(url)
                 if match:
                     return True
-            #raw_str主要起辅助作用 以后逐渐删掉里面的内容
-            compile = re.compile(raw_str)
-            if compile.search(url):
-                return True
         return False
     def isPasswdBuster(self):
         '''
@@ -320,11 +318,11 @@ class WebRisk():
         如果传递的参数是一个文件的话 则视为文件包含
         '''
         patterns = [
-            r"*.txt",
-            r"*.php",
-            r"*.conf",
-            r"*.log",
-            r"*.xml"
+            r".*[.]txt",
+            r".*[.]php",
+            r".*[.]conf",
+            r".*[.]log",
+            r".*[.]xml"
         ]
         for log in self.logs:
             try:
