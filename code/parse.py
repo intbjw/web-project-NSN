@@ -34,8 +34,12 @@ class Log():
         except ValueError:
             self.length = 0
         #得到用户提出请求时所在的URL和user-agent
-        self.url = s[3]
-        self.user_agent = self.parseUserAgent(s[5])
+        try:
+            self.url = s[3]
+            self.user_agent = self.parseUserAgent(s[5])
+        except:
+            self.url = '-'
+            self.user_agent = '未记录'
     def parseUserAgent(self,s):
         
         patterns ={ r"Mozilla/\d[.]\d [(].+?[)] AppleWebKit/\d{1,5}[.]\d{1,5} [(].+?[)] Chrome/.*? Safari/\d{1,5}[.]\d{1,5}":"Chrome",
@@ -175,7 +179,10 @@ class WebRisk():
         time = self.logs[0].date.getSec()
         for log in self.logs:
             #将所有出现的资源添加到一个集合中
-            path_set.add(urllib.parse.urlparse(unquote(log.header.split()[1])).path)
+            try:
+                path_set.add(urllib.parse.urlparse(unquote(log.header.split()[1])).path)
+            except:
+                pass
             #如果存在2秒内进行一次请求
             if WebDate.sec_minutes(time,log.date.getSec())<2 and log.status_code == 404:
                 count += 1
@@ -199,7 +206,10 @@ class WebRisk():
         r"or .*? (--|#)"
         ]
         for log in self.logs:
-            query = unquote(log.header.split()[1]).lower()
+            try:
+                query = unquote(log.header.split()[1]).lower()
+            except:
+                query = '-'
             #将查询字符串中的连接符转换为空格
             query.replace("+"," ")
             query.replace("/**/"," ")
@@ -226,7 +236,10 @@ class WebRisk():
         onunload(\s)+"""
         for log in self.logs:
             #先将url解析出来，然后将+号等特殊符号转换为空格
-            url = unquote(log.header.split()[1]).lower().replace("+"," ")
+            try:
+                url = unquote(log.header.split()[1]).lower().replace("+"," ")
+            except:
+                url = '-'
             patterns = [
                 r"<script>.*</script>",
                 r"alert[(].*?[)]",
@@ -255,7 +268,10 @@ class WebRisk():
         count = 0
         time = self.logs[0].date.getSec()
         for log in self.logs:
-            url = unquote(log.header.split()[1]).lower()
+            try:
+                url = unquote(log.header.split()[1]).lower()
+            except:
+                url = '-'
             if log.date.sec_minutes(time,log.date.getSec()) < 2:
                 url = urllib.parse.urlparse(url).path
                 for i in pwd_dir:
@@ -284,7 +300,10 @@ class WebRisk():
             ]
         blackkey = ("shell_exec","passthru","popen","proc_popenla","phpinfo()")
         for log in self.logs:
-            url = unquote(log.header.split()[1]).lower()
+            try:
+                url = unquote(log.header.split()[1]).lower()
+            except:
+                url = '-'
             for i in blackkey:
                 if i in url:
                     return True
@@ -308,7 +327,10 @@ class WebRisk():
             r"*.xml"
         ]
         for log in self.logs:
-            url = unquote(log.header.split()[1]).lower()
+            try:
+                url = unquote(log.header.split()[1]).lower()
+            except:
+                url = '-'
             params_pos = url.find('?')
             params = url[params_pos:].split('&')
             for param in params:
@@ -339,7 +361,10 @@ class WebRisk():
             if log.user_agent == "-" or log.user_agent in self.black_agent:
                 return True
             #url解析 然后处理各种注入
-            url = unquote(log.header.split()[1]).lower()
+            try:
+                url = unquote(log.header.split()[1]).lower()
+            except:
+                url = '-'
             for i in self.sql_inject:
                 if i in url:
                     return True
@@ -377,7 +402,7 @@ def makejson(risk_lists):
     js_result = []
     for risk in risk_lists:
         #如果存在威胁的话
-        if risk.risk_level != 0:
+        if risk.risk_level != 0 and risk.ip != '127.0.0.1':
             dic = {}
             dic["ip"] = risk.ip
             dic["date"] = risk.date
@@ -409,9 +434,12 @@ class Statistics():
     def CountURL(self,logs):
         URLset = {}
         for log in logs:
-            url = unquote(log.header.split()[1])
-            o = urlparse(url)
-            URLset[o[2]] = URLset.get(o[2],0) + 1
+            try:
+                url = unquote(log.header.split()[1])
+                o = urlparse(url)
+                URLset[o[2]] = URLset.get(o[2],0) + 1
+            except IndexError:
+                pass
         URLset = sorted(URLset.items(), key=lambda x: x[1], reverse=True)
         return URLset[:10]
 
