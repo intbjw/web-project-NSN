@@ -111,14 +111,9 @@ def getipaddress():
             ip = i['ip']
             r = requests.get('http://api.map.baidu.com/location/ip?ip=' + ip + '&ak=X7K1gs9RPEoakNnYOtcIgPeMaqGu7TVu&coor=bd09ll')
             result1 = r.json()
-            if 'key' in result1:
-                #print(result1)
-                city = result1['content']['address_detail']['city']
-                ipcount = i['ipcount']
-                ipaddress = ipaddress + [(city,ipcount)]
-            else:
-                pass
-
+            city = result1['content']['address_detail']['city']
+            ipcount = i['ipcount']
+            ipaddress = ipaddress + [(city,ipcount)]
     #print(ipaddress)
     ipGeo(ipaddress)
 def openUrl(url):
