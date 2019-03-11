@@ -10,6 +10,7 @@ import os
 import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtWebEngineWidgets
+from PyQt5.QtCore import QCoreApplication
 from PyQt5.QtWidgets import QFileDialog, QHeaderView, QPushButton, QDialog, QTabWidget
 import requests
 from pyecharts import Geo
@@ -31,6 +32,7 @@ class Ui_MainWindow(object):
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("")
         MainWindow.setWindowFlags(QtCore.Qt.CustomizeWindowHint)  # 去掉标题栏的代码
+        MainWindow.setWindowFlags(QtCore.Qt.FramelessWindowHint)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.frame_top = QtWidgets.QFrame(self.centralwidget)
@@ -44,11 +46,14 @@ class Ui_MainWindow(object):
         self.pushButton_open.setStyleSheet("background:green;")
         self.pushButton_open.setObjectName("pushButton_open")
         self.pushButton = QtWidgets.QPushButton(self.frame_top)
-        self.pushButton.setGeometry(QtCore.QRect(200, 10, 71, 31))
+        self.pushButton.setGeometry(QtCore.QRect(160, 10, 71, 31))
         self.pushButton.setObjectName("pushButton")
         self.pushButton_2 = QtWidgets.QPushButton(self.frame_top)
-        self.pushButton_2.setGeometry(QtCore.QRect(400, 10, 71, 31))
+        self.pushButton_2.setGeometry(QtCore.QRect(300, 10, 71, 31))
         self.pushButton_2.setObjectName("pushButton_2")
+        self.pushButton_3 = QtWidgets.QPushButton(self.frame_top)
+        self.pushButton_3.setGeometry(QtCore.QRect(450, 10, 71, 31))
+        self.pushButton_3.setObjectName("pushButton_3")
         self.groupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.groupBox.setGeometry(QtCore.QRect(50, 90, 1321, 701))
         font = QtGui.QFont()
@@ -801,6 +806,8 @@ class Ui_MainWindow(object):
         self.pushButton_open.clicked.connect(Ui_MainWindow.slot_btn_chooseFile)
         self.pushButton.clicked.connect(MainWindow.slot_btn_start)
         self.pushButton_2.clicked.connect(Ui_MainWindow.slot_btn_ip)
+
+        self.pushButton_3.clicked.connect(QCoreApplication.instance().quit)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def slot_btn_chooseFile(self):
@@ -828,6 +835,7 @@ class Ui_MainWindow(object):
         self.pushButton_open.setText(_translate("MainWindow", "日志导入"))
         self.pushButton.setText(_translate("MainWindow", "日志分析"))
         self.pushButton_2.setText(_translate("MainWindow", "IP溯源"))
+        self.pushButton_3.setText(_translate("MainWindow", "关闭"))
         self.groupBox.setTitle(_translate("MainWindow", "分析结果"))
         item = self.table.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "目标IP"))
