@@ -214,9 +214,12 @@ class WebRisk():
             #将查询字符串中的连接符转换为空格
             query.replace("+"," ")
             query.replace("/**/"," ")
+            '''
             for i in self.sql_inject:
                 if i in query:
                     return True
+            '''
+            
         for i in raw_str:
             match = re.search(i,query)
             if match:
