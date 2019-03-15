@@ -212,8 +212,8 @@ class WebRisk():
             except:
                 query = '-'
             #将查询字符串中的连接符转换为空格
-            query.replace("+"," ")
-            query.replace("/**/"," ")
+            query = query.replace("+"," ")
+            query = query.replace("/**/"," ")
             '''
             for i in self.sql_inject:
                 if i in query:
